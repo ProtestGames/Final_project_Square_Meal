@@ -38,7 +38,6 @@ class Enemy {
         return false;
     }
 
-
     void checkBoundary() {
         if (this.x <= 0 || this.x >= width - gridSize || board[(int)this.x/gridSize][(int)(this.y/gridSize)] == 1) {
             this.direction[0] = -this.direction[0];
