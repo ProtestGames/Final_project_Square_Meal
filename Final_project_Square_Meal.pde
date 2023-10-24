@@ -8,19 +8,20 @@ boolean isBlockMoving = false;
 float movingBlockX, movingBlockY;  // Current position of the moving block
 float destBlockX, destBlockY;  // Destination position
 float blockSpeed = 5;  // Speed at which block moves (adjust as needed)
-int enemySpeed=2;
 int stunnedDuration=300;
 PImage startButton;
 int level=0;
 ArrayList<Enemy> enemies = new ArrayList<Enemy>();
-
+color c = color(100, 101, 120);
 class Enemy {
     float x, y;
     int[] direction;
     boolean isStunned;
     int stunnedCounter;
+    int enemySpeed=2;
 
-    Enemy(float x, float y) {
+    Enemy(float x, float y,int speed) {
+        this.enemySpeed = speed;
         this.x = x;
         this.y = y;
         this.direction = new int[]{1, 0}; // Default to moving right
@@ -42,7 +43,7 @@ class Enemy {
     }
 
     void checkBoundary() {
-        if (this.x <= 0 || this.x >= width - gridSize || board[(int)(this.x/gridSize)][(int)(this.y/gridSize)] == 1) {
+        if (this.x <= 0 || this.x >= width - gridSize || board[(int)(this.x/gridSize)][(int)(this.y/gridSize)] == 1|| board[int((this.x + this.direction[0] * enemySpeed)/gridSize)][int( (this.y + this.direction[1] * enemySpeed)/gridSize) ]==1) {
             this.direction[0] = -this.direction[0];
             this.direction[1] = -this.direction[1];
         }
@@ -73,7 +74,7 @@ class Enemy {
         ellipse(this.x + gridSize/2, this.y + gridSize/2, gridSize, gridSize);
     }
 }
-
+/* old function
 void setuplevel(){
   if(level==1){
       enemies.add(new Enemy(width/4, height/2));
@@ -91,6 +92,38 @@ void setuplevel(){
     println("Invalid level "+level);
   }
   return;      
+}*/
+void setuplevel() {
+  background(c);
+  if (level == 1) {
+    JSONObject json = loadJSONObject("map.json"); // Load the JSON file
+    JSONObject levelData = json.getJSONObject("level1"); // Get data for level1
+
+    // Get the board data
+    JSONArray boardData = levelData.getJSONArray("board");
+    board = new int[width/gridSize][height/gridSize];
+    for (int i = 0; i < boardData.size(); i++) {
+      JSONArray row = boardData.getJSONArray(i);
+      for (int j = 0; j < row.size(); j++) {
+        board[j][i] = row.getInt(j);
+      }
+    }
+
+    // Get player position
+    playerX = levelData.getInt("playerX");
+    playerY = levelData.getInt("playerY");
+
+    // Get enemy data
+    JSONArray enemiesData = levelData.getJSONArray("enemies");
+    for (int i = 0; i < enemiesData.size(); i++) {
+      JSONObject enemyData = enemiesData.getJSONObject(i);
+      float x = enemyData.getFloat("x");
+      float y = enemyData.getFloat("y");
+      enemies.add(new Enemy(x, y, int(random(2,3)) ));
+    }
+  } else {
+    println("Invalid level " + level);
+  }
 }
 
 void setup() {
@@ -113,13 +146,15 @@ void setup() {
 
 void mouseClicked() {
   // Check if the mouse was clicked on the start button
-  if (mouseX > width/2 - startButton.width/2 && mouseX < width/2 + startButton.width/2 &&
-      mouseY > height/2 - startButton.height/2 && mouseY < height/2 + startButton.height/2) {
-    // If clicked on the start button, let the user choose a level
-    int chosenLevel = int(random(0,1)); // Generate a random level (you can modify this)
-    level=chosenLevel;
-    level=1;
-    setuplevel();
+  if(level==0){
+    if (mouseX > width/2 - startButton.width/2 && mouseX < width/2 + startButton.width/2 &&
+        mouseY > height/2 - startButton.height/2 && mouseY < height/2 + startButton.height/2) {
+      // If clicked on the start button, let the user choose a level
+      int chosenLevel = int(random(0,1)); // Generate a random level (you can modify this)
+      level=chosenLevel;
+      level=1;
+      setuplevel();
+    }
   }
 }
 
@@ -129,7 +164,7 @@ void draw() {
     image(startButton, width/2 - startButton.width/2, height/2 - startButton.height/2);
   }
   else if(level==1){
-    background(255);
+    background(c);
 
     // Draw the board
     for (int i = 0; i < board.length; i++) {
