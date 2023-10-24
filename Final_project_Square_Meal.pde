@@ -1,3 +1,14 @@
+import gohai.glvideo.*;
+import VLCJVideo.*;
+import processing.video.*;
+import ddf.minim.*;
+//sound parts
+Minim minim;
+AudioPlayer player;
+PImage muteIcon,unmuteIcon;
+boolean isPlaying = true;
+boolean isMuted = false;
+
 int gridSize = 40;
 boolean isGameOver = false;
 int[][] board; // 0: empty, 1: block, 2: player, 3: enemy
@@ -95,6 +106,8 @@ void setuplevel(){
 }*/
 void setuplevel() {
   background(c);
+  player.rewind(); 
+  player.play();
   if (level == 1) {
     JSONObject json = loadJSONObject("map.json"); // Load the JSON file
     JSONObject levelData = json.getJSONObject("level1"); // Get data for level1
@@ -137,6 +150,12 @@ void setup() {
     board[i][2]=1; 
   }
   board[5][5]=1;*/
+  muteIcon = loadImage("mute.png");
+  unmuteIcon = loadImage("unmute.png");
+  minim = new Minim(this);
+  player = minim.loadFile("BGM.mp3");
+  player.loop();
+
   size(1000, 800);
   startButton = loadImage("startButton.jpg"); // Load the start button image
   
@@ -146,7 +165,7 @@ void setup() {
 
 void mouseClicked() {
   // Check if the mouse was clicked on the start button
-  if(level==0){
+  if(level==0){ //in mainscreen
     if (mouseX > width/2 - startButton.width/2 && mouseX < width/2 + startButton.width/2 &&
         mouseY > height/2 - startButton.height/2 && mouseY < height/2 + startButton.height/2) {
       // If clicked on the start button, let the user choose a level
@@ -155,6 +174,19 @@ void mouseClicked() {
       level=1;
       setuplevel();
     }
+
+    // Mute button
+    if (mouseX > 100 && mouseX < 180 && mouseY > height - 90 && mouseY < height - 10) {
+      if (!isMuted) {
+        player.setGain(-80); 
+        isMuted = true;
+      } else {
+        player.setGain(0); 
+        player.setBalance(0);
+        isMuted = false;
+      }
+    }
+
   }
 }
 
@@ -162,6 +194,8 @@ void draw() {
   if(level==0){
   // Display the start button on the screen
     image(startButton, width/2 - startButton.width/2, height/2 - startButton.height/2);
+    if(isMuted)image(muteIcon, 100, height - 90, 80, 80);
+    else image(unmuteIcon, 100, height - 90, 80, 80);
   }
   else if(level==1){
     background(c);
