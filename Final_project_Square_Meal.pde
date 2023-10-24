@@ -91,7 +91,6 @@ void setuplevel(){
     println("Invalid level "+level);
   }
   return;      
-
 }
 
 void setup() {
@@ -105,7 +104,7 @@ void setup() {
     board[i][2]=1; 
   }
   board[5][5]=1;*/
-  size(800, 800);
+  size(1000, 800);
   startButton = loadImage("startButton.jpg"); // Load the start button image
   
   // Display the start button on the screen
