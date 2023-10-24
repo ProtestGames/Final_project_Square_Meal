@@ -10,7 +10,10 @@ float destBlockX, destBlockY;  // Destination position
 float blockSpeed = 5;  // Speed at which block moves (adjust as needed)
 int enemySpeed=2;
 int stunnedDuration=300;
+PImage startButton;
+int level=0;
 ArrayList<Enemy> enemies = new ArrayList<Enemy>();
+
 class Enemy {
     float x, y;
     int[] direction;
@@ -39,7 +42,7 @@ class Enemy {
     }
 
     void checkBoundary() {
-        if (this.x <= 0 || this.x >= width - gridSize || board[(int)this.x/gridSize][(int)(this.y/gridSize)] == 1) {
+        if (this.x <= 0 || this.x >= width - gridSize || board[(int)(this.x/gridSize)][(int)(this.y/gridSize)] == 1) {
             this.direction[0] = -this.direction[0];
             this.direction[1] = -this.direction[1];
         }
@@ -47,7 +50,7 @@ class Enemy {
 
     void checkCollisionWithBlock() {
         if (isBlockMoving && dist(this.x, this.y, movingBlockX, movingBlockY) < gridSize) {
-            isBlockMoving = false; // Stop the block
+            //isBlockMoving = false; // Stop the block
             this.isStunned = true;
         }
     }
@@ -71,8 +74,28 @@ class Enemy {
     }
 }
 
+void setuplevel(){
+  if(level==1){
+      enemies.add(new Enemy(width/4, height/2));
+      //size(800, 800);
+      board = new int[width/gridSize][height/gridSize];
+      playerX = width/2;
+      playerY = height/2;
+      board[playerX/gridSize][playerY/gridSize] = 2; // set player start position
+      for(int i=0;i<width/gridSize;i++){  ///set up the map
+        board[i][2]=1; 
+      }
+      board[5][5]=1;
+  }
+  else{
+    println("Invalid level "+level);
+  }
+  return;      
+
+}
+
 void setup() {
-  enemies.add(new Enemy(width/4, height/2));
+  /*enemies.add(new Enemy(width/4, height/2));
   size(800, 800);
   board = new int[width/gridSize][height/gridSize];
   playerX = width/2;
@@ -81,62 +104,85 @@ void setup() {
   for(int i=0;i<width/gridSize;i++){  ///set up the map
     board[i][2]=1; 
   }
-  board[5][5]=1;
+  board[5][5]=1;*/
+  size(800, 800);
+  startButton = loadImage("startButton.jpg"); // Load the start button image
+  
+  // Display the start button on the screen
+  image(startButton, width/2 - startButton.width/2, height/2 - startButton.height/2);
+}
+
+void mouseClicked() {
+  // Check if the mouse was clicked on the start button
+  if (mouseX > width/2 - startButton.width/2 && mouseX < width/2 + startButton.width/2 &&
+      mouseY > height/2 - startButton.height/2 && mouseY < height/2 + startButton.height/2) {
+    // If clicked on the start button, let the user choose a level
+    int chosenLevel = int(random(0,1)); // Generate a random level (you can modify this)
+    level=chosenLevel;
+    level=1;
+    setuplevel();
+  }
 }
 
 void draw() {
-  background(255);
+  if(level==0){
+  // Display the start button on the screen
+    image(startButton, width/2 - startButton.width/2, height/2 - startButton.height/2);
+  }
+  else if(level==1){
+    background(255);
 
-  // Draw the board
-  for (int i = 0; i < board.length; i++) {
-    for (int j = 0; j < board[i].length; j++) {
-      if (board[i][j] == 1) {
-        fill(100); // gray for blocks
-        rect(i*gridSize, j*gridSize, gridSize, gridSize);
+    // Draw the board
+    for (int i = 0; i < board.length; i++) {
+      for (int j = 0; j < board[i].length; j++) {
+        if (board[i][j] == 1) {
+          fill(100); // gray for blocks
+          rect(i*gridSize, j*gridSize, gridSize, gridSize);
+        }
+        if (board[i][j] == 2) {
+          fill(0, 255, 0); // green for player
+          ellipse(i*gridSize + gridSize/2, j*gridSize + gridSize/2, gridSize, gridSize);
+        }
+        // ... Add drawing logic for other entities
       }
-      if (board[i][j] == 2) {
-        fill(0, 255, 0); // green for player
-        ellipse(i*gridSize + gridSize/2, j*gridSize + gridSize/2, gridSize, gridSize);
+    }
+    for (Enemy enemy : enemies) {
+      enemy.move();
+      enemy.checkBoundary();
+      enemy.checkCollisionWithBlock();
+      enemy.update();
+      enemy.display();
+
+      if (enemy.checkCollisionWithPlayer()) {
+          isGameOver = true;
       }
-      // ... Add drawing logic for other entities
+    }
+
+      // Handle game over
+      if (isGameOver) {
+          fill(0);
+          textSize(48);
+          textAlign(CENTER, CENTER);
+          text("GAME OVER", width / 2, height / 2);
+          noLoop();  // Stop updating the game
+      }
+
+    if (isBlockMoving) {
+      // Move the block towards its destination
+      movingBlockX += (destBlockX - movingBlockX) * blockSpeed * 0.01; // 0.01 is just a smoothing factor
+      movingBlockY += (destBlockY - movingBlockY) * blockSpeed * 0.01;
+
+      // Check if block has reached its destination (or very close)
+      if (dist(movingBlockX, movingBlockY, destBlockX, destBlockY) < 1) {
+          isBlockMoving = false;
+          board[floor(destBlockX/gridSize)][floor(destBlockY/gridSize)] = 1;  // Place the block at destination
+      }
+      
+      // Draw the moving block
+      fill(100);
+      rect(movingBlockX, movingBlockY, gridSize, gridSize);
     }
   }
-  for (Enemy enemy : enemies) {
-    enemy.move();
-    enemy.checkBoundary();
-    enemy.checkCollisionWithBlock();
-    enemy.update();
-    enemy.display();
-
-    if (enemy.checkCollisionWithPlayer()) {
-        isGameOver = true;
-     }
-  }
-
-    // Handle game over
-    if (isGameOver) {
-        fill(0);
-        textSize(48);
-        textAlign(CENTER, CENTER);
-        text("GAME OVER", width / 2, height / 2);
-        noLoop();  // Stop updating the game
-    }
-
-  if (isBlockMoving) {
-    // Move the block towards its destination
-    movingBlockX += (destBlockX - movingBlockX) * blockSpeed * 0.01; // 0.01 is just a smoothing factor
-    movingBlockY += (destBlockY - movingBlockY) * blockSpeed * 0.01;
-
-    // Check if block has reached its destination (or very close)
-    if (dist(movingBlockX, movingBlockY, destBlockX, destBlockY) < 1) {
-        isBlockMoving = false;
-        board[floor(destBlockX/gridSize)][floor(destBlockY/gridSize)] = 1;  // Place the block at destination
-    }
-    
-    // Draw the moving block
-    fill(100);
-    rect(movingBlockX, movingBlockY, gridSize, gridSize);
-}
 }
 int movex[]={-1,0,1,0};
 int movey[]={0,1,0,-1};
@@ -152,7 +198,7 @@ void keyPressed() {
     playerX -= gridSize;dir=3;}
   if (keyCode == RIGHT && playerX < width - gridSize && board[playerCellX + 1][playerCellY] == 0) {
     playerX += gridSize;dir=1;}
-  println("Key pressed: " + dir);
+  //println("Key pressed: " + dir);
   if (keyCode == 32||key==' ' ) {
     if (hasBlock) {
         // Try to throw the block
