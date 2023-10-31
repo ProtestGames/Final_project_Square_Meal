@@ -6,6 +6,7 @@ import ddf.minim.*;
 Minim minim;
 AudioPlayer player;
 PImage muteIcon,unmuteIcon;
+PImage stoneblock;
 boolean isPlaying = true;
 boolean isMuted = false;
 
@@ -54,7 +55,10 @@ class Enemy {
     }
 
     void checkBoundary() {
-        if (this.x <= 0 || this.x >= width - gridSize || board[(int)(this.x/gridSize)][(int)(this.y/gridSize)] == 1|| board[int((this.x + this.direction[0] * enemySpeed)/gridSize)][int( (this.y + this.direction[1] * enemySpeed)/gridSize) ]==1) {
+        int nowx=(int)(this.x/gridSize+0.25);
+        int nowy=(int)(this.y/gridSize+0.25);
+        //println("nowx= "+nowx+"nowy= "+nowy);
+        if (this.x <= 0 || this.x >= width - gridSize ||this.y<=0||this.y>=height-gridSize||board[nowx][nowy]!=0  /*board[nowx+this.direction[0]][nowy+this.direction[1]]!=0*/) {
             this.direction[0] = -this.direction[0];
             this.direction[1] = -this.direction[1];
         }
@@ -151,6 +155,7 @@ void setup() {
   }
   board[5][5]=1;*/
   muteIcon = loadImage("mute.png");
+  stoneblock = loadImage("block2.png");
   unmuteIcon = loadImage("unmute.png");
   minim = new Minim(this);
   player = minim.loadFile("BGM.mp3");
@@ -204,8 +209,9 @@ void draw() {
     for (int i = 0; i < board.length; i++) {
       for (int j = 0; j < board[i].length; j++) {
         if (board[i][j] == 1) {
-          fill(100); // gray for blocks
-          rect(i*gridSize, j*gridSize, gridSize, gridSize);
+          image(stoneblock,i*gridSize,j*gridSize, gridSize*1, gridSize*1.7);
+          /*fill(100); // gray for blocks
+          rect(i*gridSize, j*gridSize, gridSize, gridSize);*/
         }
         if (board[i][j] == 2) {
           fill(0, 255, 0); // green for player
@@ -215,8 +221,8 @@ void draw() {
       }
     }
     for (Enemy enemy : enemies) {
-      enemy.move();
       enemy.checkBoundary();
+      enemy.move();
       enemy.checkCollisionWithBlock();
       enemy.update();
       enemy.display();
@@ -247,8 +253,10 @@ void draw() {
       }
       
       // Draw the moving block
-      fill(100);
-      rect(movingBlockX, movingBlockY, gridSize, gridSize);
+      //fill(100);
+      //rect(movingBlockX, movingBlockY, gridSize, gridSize);
+      image(stoneblock,movingBlockX, movingBlockY, gridSize*1, gridSize*1.7);
+
     }
   }
 }
