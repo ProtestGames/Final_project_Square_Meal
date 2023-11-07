@@ -6,7 +6,10 @@ import ddf.minim.*;
 Minim minim;
 AudioPlayer player;
 PImage muteIcon,unmuteIcon;
-PImage stoneblock;
+PImage stoneblock,back_image;
+PImage beginscr;
+PImage levelSelectImage;
+PImage settingsButton, quitButton, levelSelectScreen;
 boolean isPlaying = true;
 boolean isMuted = false;
 
@@ -21,21 +24,47 @@ float movingBlockX, movingBlockY;  // Current position of the moving block
 float destBlockX, destBlockY;  // Destination position
 float blockSpeed = 5;  // Speed at which block moves (adjust as needed)
 int stunnedDuration=300;
+int lastExecutedTime = 0;
+
+
+int settingsButtonX, settingsButtonY, settingsButtonWidth, settingsButtonHeight;
+int quitButtonX, quitButtonY, quitButtonWidth, quitButtonHeight;
+
 PImage startButton;
 int level=0;
 ArrayList<Enemy> enemies = new ArrayList<Enemy>();
 color c = color(100, 101, 120);
+
+boolean checkAABBCollision(float x1, float y1, float w1, float h1, float x2, float y2, float w2, float h2) {
+  float leftx1 ,rightx1;
+  float upy1 ,downy1;
+  float leftx2 ,rightx2;
+  float upy2 ,downy2;
+  leftx1=x1; rightx1=x1+w1;
+  leftx2=x2; rightx2=x2+w2;
+  upy1=y1;   downy1=y1+h1;
+  upy2=y2;   downy2=y2+h2;
+
+  if(rightx1<=leftx2|| rightx2<=leftx1) return false;
+  if(downy1<=upy2||upy1>=downy2) return false;
+  return true;
+}
+
 class Enemy {
     float x, y;
     int[] direction;
     boolean isStunned;
     int stunnedCounter;
-    int enemySpeed=2;
+    int enemex,enemey;
+    int enemySpeed=1;
+    int nextX,nextY;
 
     Enemy(float x, float y,int speed) {
         this.enemySpeed = speed;
         this.x = x;
         this.y = y;
+        enemex=int(x/gridSize);
+        enemey=int(y/gridSize);
         this.direction = new int[]{1, 0}; // Default to moving right
         this.isStunned = false;
         this.stunnedCounter = 0;
@@ -45,31 +74,84 @@ class Enemy {
         if (!isStunned) {
             this.x += this.direction[0] * enemySpeed;
             this.y += this.direction[1] * enemySpeed;
+            enemex=int(this.x/gridSize);
+            enemey=int(this.y/gridSize);
         }
     }
     boolean checkCollisionWithPlayer() {
-        if (!this.isStunned && dist(this.x, this.y, playerX, playerY) < gridSize) {
-            return true;
-        }
-        return false;
+      if (!this.isStunned) {
+        println("thisx,thisy"+this.x+" "+this.y+"plx,ply"+ playerX+" "+ playerY);
+        return checkAABBCollision(this.x, this.y, gridSize, gridSize, playerX, playerY, gridSize, gridSize);
+      }
+      return false;
     }
 
-    void checkBoundary() {
-        int nowx=(int)(this.x/gridSize+0.25);
-        int nowy=(int)(this.y/gridSize+0.25);
-        //println("nowx= "+nowx+"nowy= "+nowy);
-        if (this.x <= 0 || this.x >= width - gridSize ||this.y<=0||this.y>=height-gridSize||board[nowx][nowy]!=0  /*board[nowx+this.direction[0]][nowy+this.direction[1]]!=0*/) {
-            this.direction[0] = -this.direction[0];
-            this.direction[1] = -this.direction[1];
-        }
+
+    void turnCounterClockwise() {
+      if (millis() - lastExecutedTime < 250)return;
+      lastExecutedTime=millis();
+      if (this.direction[0] == 1 && this.direction[1] == 0) { // Moving right
+          this.direction[0] = 0;
+          this.direction[1] = -1; // Turn up
+      } else if (this.direction[0] == 0 && this.direction[1] == -1) { // Moving up
+          this.direction[0] = -1;
+          this.direction[1] = 0; // Turn left
+      } else if (this.direction[0] == -1 && this.direction[1] == 0) { // Moving left
+          this.direction[0] = 0;
+          this.direction[1] = 1; // Turn down
+      } else if (this.direction[0] == 0 && this.direction[1] == 1) { // Moving down
+          this.direction[0] = 1;
+          this.direction[1] = 0; // Turn right
+      }
+      //this.x+=this.direction[0]*40;
+      //this.y+=this.direction[1]*40;
     }
+    void checkBoundary() {   //PERFECT I fix every bugs here 
+      // Check for collision with game boundaries
+      boolean hitBoundary = (this.x < 0 || this.x+gridSize  > width || this.y < 0 || this.y+gridSize   > height);
+      if(this.x<0) this.x=0;
+      if(this.x+gridSize>width) this.x=width-gridSize;
+      if(this.y<0) this.y=0;
+      if(this.y+gridSize>height) this.y=height-gridSize;
+
+      // Check for collision with blocks on the board
+      boolean hitBlock = false;
+      for (int i = 0; i < board.length; i++) {
+          for (int j = 0; j < board[0].length; j++) {
+              if (board[i][j] == 1) {
+                  float blockX = i * gridSize;
+                  float blockY = j * gridSize;
+                  if (checkAABBCollision(this.x, this.y, gridSize, gridSize, blockX, blockY, gridSize, gridSize)) {
+                      hitBlock = true;
+                      break;
+                  }
+              }
+          }
+          if (hitBlock) {
+              break;
+          }
+      }
+
+      // If the enemy hits a boundary or a block, turn counterclockwise
+      if (hitBoundary || hitBlock) {
+        if(hitBlock){
+          if(direction[0]>0) this.x-=(this.x%gridSize);
+          if(direction[1]>0) this.y-=(this.y%gridSize);
+          if(direction[0]<0) this.x+=(gridSize - (this.x%gridSize));
+          if(direction[1]<0) this.y+=(gridSize - (this.y%gridSize));
+        }//if(direction[0]>0){this.x-=(this.x%gridSize);}else {this.x+=(this.x%gridSize);}
+        //if(direction[1]>0){this.y-=(this.y%gridSize);}else {this.y+=(this.y%gridSize);}
+          turnCounterClockwise();
+      }
+    }
+
 
     void checkCollisionWithBlock() {
-        if (isBlockMoving && dist(this.x, this.y, movingBlockX, movingBlockY) < gridSize) {
-            //isBlockMoving = false; // Stop the block
-            this.isStunned = true;
-        }
-    }
+      if (isBlockMoving && checkAABBCollision(this.x, this.y, gridSize, gridSize, movingBlockX, movingBlockY, gridSize, gridSize)) {
+        this.isStunned = true;
+      }
+    } 
+
 
     void update() {
         if (this.isStunned && this.stunnedCounter < stunnedDuration) {
@@ -86,7 +168,8 @@ class Enemy {
         if (this.isStunned) {
             fill(128, 0, 0); // Dark red for stunned enemy
         }
-        ellipse(this.x + gridSize/2, this.y + gridSize/2, gridSize, gridSize);
+        ellipse(this.x+20 /*gridSize/2*/, this.y+20  /*gridSize/2*/, gridSize, gridSize);
+        //ellipse(enemex*gridSize+20, enemey*gridSize+20, gridSize, gridSize);
     }
 }
 /* old function
@@ -109,9 +192,10 @@ void setuplevel(){
   return;      
 }*/
 void setuplevel() {
-  background(c);
+  
+  image(back_image, 0, 0, width, height);
   player.rewind(); 
-  player.play();
+  player.loop();
   if (level == 1) {
     JSONObject json = loadJSONObject("map.json"); // Load the JSON file
     JSONObject levelData = json.getJSONObject("level1"); // Get data for level1
@@ -144,35 +228,52 @@ void setuplevel() {
 }
 
 void setup() {
-  /*enemies.add(new Enemy(width/4, height/2));
-  size(800, 800);
-  board = new int[width/gridSize][height/gridSize];
-  playerX = width/2;
-  playerY = height/2;
-  board[playerX/gridSize][playerY/gridSize] = 2; // set player start position
-  for(int i=0;i<width/gridSize;i++){  ///set up the map
-    board[i][2]=1; 
-  }
-  board[5][5]=1;*/
-  muteIcon = loadImage("mute.png");
+  beginscr = loadImage("Begin_Screen.jpg");
+  muteIcon = loadImage("unmute.jpg");
   stoneblock = loadImage("block2.png");
-  unmuteIcon = loadImage("unmute.png");
+  unmuteIcon = loadImage("mute.jpg");
+  levelSelectImage = loadImage("levelSelectImage.png"); // Replace with your level selection image file
+  levelSelectImage.resize(600,500); // Adjust size as needed
+  back_image = loadImage("background.jpg");
+  back_image.resize(1000,800);
   minim = new Minim(this);
   player = minim.loadFile("BGM.mp3");
   player.loop();
 
+  //settingsButton = loadImage("settingsButton.jpg"); // Replace with your settings button image file
+  quitButton = loadImage("quit.jpg"); // Replace with your quit button image file
+  settingsButton = loadImage("setting.jpg");
+  settingsButton.resize(50, 50); // Adjust size as needed
+  quitButton.resize(100, 50); // Adjust size as needed
+
   size(1000, 800);
   startButton = loadImage("startButton.jpg"); // Load the start button image
-  
+  beginscr.resize(1000,800);
+  background(beginscr);
+
   // Display the start button on the screen
-  image(startButton, width/2 - startButton.width/2, height/2 - startButton.height/2);
+  //image(startButton, width/2 - startButton.width/2, height/2 - startButton.height/2);
 }
 
 void mouseClicked() {
   // Check if the mouse was clicked on the start button
   if(level==0){ //in mainscreen
-    if (mouseX > width/2 - startButton.width/2 && mouseX < width/2 + startButton.width/2 &&
-        mouseY > height/2 - startButton.height/2 && mouseY < height/2 + startButton.height/2) {
+
+    if (mouseX > 400 && mouseX < 600 && mouseY > 350 && mouseY < 450) {
+            level = 1; // or any other level you want to start
+            setuplevel(); // Load the level and start the game
+    }
+
+    if (mouseX > 750 && mouseX < 800 && mouseY > 700 && mouseY < 750) {
+            // Open settings - implement settings functionality
+    }
+
+    // Check if the Quit button is clicked
+    if (mouseX > 850 && mouseX < 950 && mouseY > 700 && mouseY < 750) {
+        exit(); // Quit the game
+    }
+    if (mouseX > width/3 -20 && mouseX < width/2 + 180 &&
+        mouseY > height -110 && mouseY < height-50 ) {
       // If clicked on the start button, let the user choose a level
       int chosenLevel = int(random(0,1)); // Generate a random level (you can modify this)
       level=chosenLevel;
@@ -198,12 +299,16 @@ void mouseClicked() {
 void draw() {
   if(level==0){
   // Display the start button on the screen
-    image(startButton, width/2 - startButton.width/2, height/2 - startButton.height/2);
+    //image(startButton, width/2+180, height-50);
     if(isMuted)image(muteIcon, 100, height - 90, 80, 80);
     else image(unmuteIcon, 100, height - 90, 80, 80);
+
+    image(settingsButton, 750, 700); // Adjust position as needed
+    image(quitButton, 850, 700); // Adjust position as needed
+    image(levelSelectImage, 200, 75);
   }
   else if(level==1){
-    background(c);
+    background(back_image);
 
     // Draw the board
     for (int i = 0; i < board.length; i++) {
