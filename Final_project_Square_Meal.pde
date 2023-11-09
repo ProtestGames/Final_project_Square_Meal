@@ -57,6 +57,7 @@ class Enemy {
     boolean isStunned;
     int stunnedCounter;
     int enemex,enemey;
+    int lastx,lasty;
     int enemySpeed=1;
     int nextX,nextY;
 
@@ -65,7 +66,9 @@ class Enemy {
         this.x = x;
         this.y = y;
         enemex=int(x/gridSize);
+        lastx=enemex;
         enemey=int(y/gridSize);
+        lasty=enemey;
         this.direction = new int[]{1, 0}; // Default to moving right
         this.isStunned = false;
         this.stunnedCounter = 0;
@@ -77,6 +80,9 @@ class Enemy {
             this.y += this.direction[1] * enemySpeed;
             enemex=int(this.x/gridSize);
             enemey=int(this.y/gridSize);
+            if(board[lastx][lasty]==3)board[lastx][lasty]=0;
+            lastx=enemex;lasty=enemey;
+            if(board[enemex][enemey]==0)board[enemex][enemey]=3;
         }
     }
     boolean checkCollisionWithPlayer() {
@@ -400,17 +406,17 @@ void keyPressed() {
   int playerCellX = playerX / gridSize;
   int playerCellY = playerY / gridSize;
   if (keyCode == UP)dir=0;if (keyCode == RIGHT)dir=1;if (keyCode == DOWN)dir=2;if (keyCode == LEFT)dir=3;
-  if (keyCode == UP && playerY > 0 && board[playerCellX][playerCellY - 1] == 0) {
+  if (keyCode == UP && playerY > 0 && board[playerCellX][playerCellY - 1] != 1) {
     playerY -= gridSize;dir=0;}
-  if (keyCode == DOWN && playerY < height - gridSize && board[playerCellX][playerCellY + 1] == 0) {
+  if (keyCode == DOWN && playerY < height - gridSize && board[playerCellX][playerCellY + 1] != 1) {
     playerY += gridSize;dir=2;}
-  if (keyCode == LEFT && playerX > 0 && board[playerCellX - 1][playerCellY] == 0) {
+  if (keyCode == LEFT && playerX > 0 && board[playerCellX - 1][playerCellY] != 1) {
     playerX -= gridSize;dir=3;}
-  if (keyCode == RIGHT && playerX < width - gridSize && board[playerCellX + 1][playerCellY] == 0) {
+  if (keyCode == RIGHT && playerX < width - gridSize && board[playerCellX + 1][playerCellY] != 1) {
     playerX += gridSize;dir=1;}
   //println("Key pressed: " + dir);
   if (keyCode == 32||key==' ' ) {
-    if (hasBlock) {
+    if (hasBlock&&isBlockMoving==false) {
         // Try to throw the block
         int nextCellX = playerCellX + movey[dir];
         int nextCellY = playerCellY + movex[dir];
@@ -437,7 +443,7 @@ void keyPressed() {
             destBlockY = (nextCellY - movex[dir]) * gridSize;
         }
     }  
-    else{
+    else if(!hasBlock){
       // Check blocks around the player and swallow them
 
           int checkX = playerCellX + movey[dir];
@@ -447,6 +453,7 @@ void keyPressed() {
               hasBlock = true;
               board[checkX][checkY] = 0;  // Remove the block and make it a path
             }
+            //else if()
           }
       }
 
