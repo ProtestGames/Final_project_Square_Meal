@@ -259,8 +259,28 @@ void mouseClicked() {
   // Check if the mouse was clicked on the start button
   if(level==0){ //in mainscreen
 
-    if (mouseX > 400 && mouseX < 600 && mouseY > 350 && mouseY < 450) {
+    if (mouseX > 230 && mouseX < 312 && mouseY > 410 && mouseY < 515) {   //level 1 buttons
             level = 1; // or any other level you want to start
+            setuplevel(); // Load the level and start the game
+    }
+    if (mouseX > 325 && mouseX < 407 && mouseY > 410 && mouseY < 515) {   //level 2 buttons
+            level = 2; // or any other level you want to start
+            setuplevel(); // Load the level and start the game
+    }
+    if (mouseX > 415 && mouseX < 497 && mouseY > 410 && mouseY < 515) {   //level 3 buttons
+            level = 3; // or any other level you want to start
+            setuplevel(); // Load the level and start the game
+    }
+    if (mouseX > 505 && mouseX < 587 && mouseY > 410 && mouseY < 515) {   //level 4 buttons
+            level = 4; // or any other level you want to start
+            setuplevel(); // Load the level and start the game
+    }
+    if (mouseX > 595 && mouseX < 677 && mouseY > 410 && mouseY < 515) {   //level 5 buttons
+            level = 5; // or any other level you want to start
+            setuplevel(); // Load the level and start the game
+    }
+    if (mouseX > 685 && mouseX < 767 && mouseY > 410 && mouseY < 515) {   //level 5 buttons
+            level = 6; // or any other level you want to start
             setuplevel(); // Load the level and start the game
     }
 
@@ -299,13 +319,14 @@ void mouseClicked() {
 void draw() {
   if(level==0){
   // Display the start button on the screen
-    //image(startButton, width/2+180, height-50);
     if(isMuted)image(muteIcon, 100, height - 90, 80, 80);
     else image(unmuteIcon, 100, height - 90, 80, 80);
 
     image(settingsButton, 750, 700); // Adjust position as needed
     image(quitButton, 850, 700); // Adjust position as needed
     image(levelSelectImage, 200, 75);
+    //image(startButton, 505, 410);
+
   }
   else if(level==1){
     background(back_image);
