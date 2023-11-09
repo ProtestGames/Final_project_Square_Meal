@@ -19,6 +19,7 @@ int[][] board; // 0: empty, 1: block, 2: player, 3: enemy
 int playerX, playerY;
 int dir;
 Boolean hasBlock=false;
+Boolean showlevel=false;
 boolean isBlockMoving = false;
 float movingBlockX, movingBlockY;  // Current position of the moving block
 float destBlockX, destBlockY;  // Destination position
@@ -191,40 +192,46 @@ void setuplevel(){
   }
   return;      
 }*/
+
+void loadlevel(int level){
+  if(level<0||level>6){
+    println("Invalid level "+level); return;
+  }
+  JSONObject json = loadJSONObject("map.json"); // Load the JSON file
+  JSONObject levelData = json.getJSONObject("level"+str(level)); // Get data for level1
+
+  // Get the board data
+  JSONArray boardData = levelData.getJSONArray("board");
+  board = new int[width/gridSize][height/gridSize];
+  for (int i = 0; i < boardData.size(); i++) {
+    JSONArray row = boardData.getJSONArray(i);
+    for (int j = 0; j < row.size(); j++) {
+      board[j][i] = row.getInt(j);
+    }
+  }
+
+  // Get player position
+  playerX = levelData.getInt("playerX");
+  playerY = levelData.getInt("playerY");
+
+  // Get enemy data
+  JSONArray enemiesData = levelData.getJSONArray("enemies");
+  for (int i = 0; i < enemiesData.size(); i++) {
+    JSONObject enemyData = enemiesData.getJSONObject(i);
+    float x = enemyData.getFloat("x");
+    float y = enemyData.getFloat("y");
+    int spd = enemyData.getInt("speed");
+    enemies.add(new Enemy(x, y, spd) );
+  }
+  
+
+}
 void setuplevel() {
   
   image(back_image, 0, 0, width, height);
   player.rewind(); 
   player.loop();
-  if (level == 1) {
-    JSONObject json = loadJSONObject("map.json"); // Load the JSON file
-    JSONObject levelData = json.getJSONObject("level1"); // Get data for level1
-
-    // Get the board data
-    JSONArray boardData = levelData.getJSONArray("board");
-    board = new int[width/gridSize][height/gridSize];
-    for (int i = 0; i < boardData.size(); i++) {
-      JSONArray row = boardData.getJSONArray(i);
-      for (int j = 0; j < row.size(); j++) {
-        board[j][i] = row.getInt(j);
-      }
-    }
-
-    // Get player position
-    playerX = levelData.getInt("playerX");
-    playerY = levelData.getInt("playerY");
-
-    // Get enemy data
-    JSONArray enemiesData = levelData.getJSONArray("enemies");
-    for (int i = 0; i < enemiesData.size(); i++) {
-      JSONObject enemyData = enemiesData.getJSONObject(i);
-      float x = enemyData.getFloat("x");
-      float y = enemyData.getFloat("y");
-      enemies.add(new Enemy(x, y, int(random(2,3)) ));
-    }
-  } else {
-    println("Invalid level " + level);
-  }
+  loadlevel(level);
 }
 
 void setup() {
@@ -258,32 +265,32 @@ void setup() {
 void mouseClicked() {
   // Check if the mouse was clicked on the start button
   if(level==0){ //in mainscreen
-
-    if (mouseX > 230 && mouseX < 312 && mouseY > 410 && mouseY < 515) {   //level 1 buttons
-            level = 1; // or any other level you want to start
-            setuplevel(); // Load the level and start the game
+    if(showlevel){   //level select screen options
+      if (mouseX > 230 && mouseX < 312 && mouseY > 410 && mouseY < 515) {   //level 1 buttons
+              level = 1; // or any other level you want to start
+              setuplevel(); // Load the level and start the game
+      }
+      if (mouseX > 325 && mouseX < 407 && mouseY > 410 && mouseY < 515) {   //level 2 buttons
+              level = 2; // or any other level you want to start
+              setuplevel(); // Load the level and start the game
+      }
+      if (mouseX > 415 && mouseX < 497 && mouseY > 410 && mouseY < 515) {   //level 3 buttons
+              level = 3; // or any other level you want to start
+              setuplevel(); // Load the level and start the game
+      }
+      if (mouseX > 505 && mouseX < 587 && mouseY > 410 && mouseY < 515) {   //level 4 buttons
+              level = 4; // or any other level you want to start
+              setuplevel(); // Load the level and start the game
+      }
+      if (mouseX > 595 && mouseX < 677 && mouseY > 410 && mouseY < 515) {   //level 5 buttons
+              level = 5; // or any other level you want to start
+              setuplevel(); // Load the level and start the game
+      }
+      if (mouseX > 685 && mouseX < 767 && mouseY > 410 && mouseY < 515) {   //level 5 buttons
+              level = 6; // or any other level you want to start
+              setuplevel(); // Load the level and start the game
+      }
     }
-    if (mouseX > 325 && mouseX < 407 && mouseY > 410 && mouseY < 515) {   //level 2 buttons
-            level = 2; // or any other level you want to start
-            setuplevel(); // Load the level and start the game
-    }
-    if (mouseX > 415 && mouseX < 497 && mouseY > 410 && mouseY < 515) {   //level 3 buttons
-            level = 3; // or any other level you want to start
-            setuplevel(); // Load the level and start the game
-    }
-    if (mouseX > 505 && mouseX < 587 && mouseY > 410 && mouseY < 515) {   //level 4 buttons
-            level = 4; // or any other level you want to start
-            setuplevel(); // Load the level and start the game
-    }
-    if (mouseX > 595 && mouseX < 677 && mouseY > 410 && mouseY < 515) {   //level 5 buttons
-            level = 5; // or any other level you want to start
-            setuplevel(); // Load the level and start the game
-    }
-    if (mouseX > 685 && mouseX < 767 && mouseY > 410 && mouseY < 515) {   //level 5 buttons
-            level = 6; // or any other level you want to start
-            setuplevel(); // Load the level and start the game
-    }
-
     if (mouseX > 750 && mouseX < 800 && mouseY > 700 && mouseY < 750) {
             // Open settings - implement settings functionality
     }
@@ -295,10 +302,10 @@ void mouseClicked() {
     if (mouseX > width/3 -20 && mouseX < width/2 + 180 &&
         mouseY > height -110 && mouseY < height-50 ) {
       // If clicked on the start button, let the user choose a level
-      int chosenLevel = int(random(0,1)); // Generate a random level (you can modify this)
-      level=chosenLevel;
-      level=1;
-      setuplevel();
+      if(showlevel ==false )
+        showlevel = true;
+      else
+        showlevel = false;
     }
 
     // Mute button
@@ -319,12 +326,13 @@ void mouseClicked() {
 void draw() {
   if(level==0){
   // Display the start button on the screen
+    background(beginscr);
     if(isMuted)image(muteIcon, 100, height - 90, 80, 80);
     else image(unmuteIcon, 100, height - 90, 80, 80);
 
     image(settingsButton, 750, 700); // Adjust position as needed
     image(quitButton, 850, 700); // Adjust position as needed
-    image(levelSelectImage, 200, 75);
+    if(showlevel) image(levelSelectImage, 200, 75);
     //image(startButton, 505, 410);
 
   }
