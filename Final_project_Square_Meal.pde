@@ -12,6 +12,7 @@ PImage levelSelectImage;
 PImage settingsButton, quitButton, levelSelectScreen;
 boolean isPlaying = true;
 boolean isMuted = false;
+int overallscore=0;
 
 int gridSize = 40;
 boolean isGameOver = false;
@@ -56,12 +57,12 @@ class Enemy {
     int[] direction;
     boolean isStunned,exist;
     int stunnedCounter;
-    int enemex,enemey;
+    int enemex,enemey,score;
     int lastx,lasty;
     int enemySpeed=1;
     int nextX,nextY;
 
-    Enemy(float x, float y,int speed) {
+    Enemy(float x, float y,int speed,int score) {
         this.enemySpeed = speed;
         this.x = x;
         this.y = y;
@@ -73,6 +74,10 @@ class Enemy {
         this.isStunned = false;
         this.stunnedCounter = 0;
         this.exist = true ;
+        this.score = score;
+    }
+    int getscore(){
+      return this.score;
     }
     boolean checkexist(){
       return this.exist;
@@ -203,6 +208,7 @@ void setuplevel(){
 }*/
 
 void loadlevel(int level){
+  overallscore=0;
   if(level<0||level>6){
     println("Invalid level "+level); return;
   }
@@ -235,7 +241,8 @@ void loadlevel(int level){
     float x = enemyData.getFloat("x");
     float y = enemyData.getFloat("y");
     int spd = enemyData.getInt("speed");
-    enemies.add(new Enemy(x, y, spd) );
+    int sco = enemyData.getInt("score");
+    enemies.add(new Enemy(x, y, spd,sco) );
   }
 
   println("loaded level successfully");  
@@ -471,6 +478,8 @@ void keyPressed() {
                   int my=Math.round(monster.y / gridSize);
                   println("mx="+ mx + " my = "+ my);
                   if (mx == checkX && my == checkY) {
+                      overallscore+=monster.getscore();
+                      println("current score= "+overallscore);
                       // Update the monster state
                       monster.exist = false;
                       board[checkX][checkY] = 0;  // Remove the monster from the board

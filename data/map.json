@@ -33,7 +33,8 @@
           "direction": [1, 0],
           "isStunned": false,
           "stunnedCounter": 0,
-          "exist": true
+          "exist": true,
+          "score": 20
         },
         {
           "x": 520,
@@ -42,7 +43,8 @@
           "direction": [1, 0],
           "isStunned": false,
           "stunnedCounter": 0,
-          "exist": true
+          "exist": true,
+          "score": 20
         }
         
       ]
@@ -80,7 +82,8 @@
           "speed": 5,
           "direction": [1, 0],
           "isStunned": false,
-          "stunnedCounter": 0
+          "stunnedCounter": 0,
+          "score": 20
         },
         {
           "x": 520,
@@ -88,7 +91,8 @@
           "speed": 6,
           "direction": [1, 0],
           "isStunned": false,
-          "stunnedCounter": 0
+          "stunnedCounter": 0,
+          "score": 20
         },
         {
           "x": 320,
@@ -96,7 +100,8 @@
           "speed": 5,
           "direction": [1, 0],
           "isStunned": false,
-          "stunnedCounter": 0
+          "stunnedCounter": 0,
+          "score": 20
         }
         
       ]
