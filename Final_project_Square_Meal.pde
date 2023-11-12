@@ -54,7 +54,7 @@ boolean checkAABBCollision(float x1, float y1, float w1, float h1, float x2, flo
 class Enemy {
     float x, y;
     int[] direction;
-    boolean isStunned;
+    boolean isStunned,exist;
     int stunnedCounter;
     int enemex,enemey;
     int lastx,lasty;
@@ -72,8 +72,11 @@ class Enemy {
         this.direction = new int[]{1, 0}; // Default to moving right
         this.isStunned = false;
         this.stunnedCounter = 0;
+        this.exist = true ;
     }
-
+    boolean checkexist(){
+      return this.exist;
+    }
     void move() {
         if (!isStunned) {
             this.x += this.direction[0] * enemySpeed;
@@ -87,7 +90,7 @@ class Enemy {
     }
     boolean checkCollisionWithPlayer() {
       if (!this.isStunned) {
-        println("thisx,thisy"+this.x+" "+this.y+"plx,ply"+ playerX+" "+ playerY);
+        //println("thisx,thisy"+this.x+" "+this.y+"plx,ply"+ playerX+" "+ playerY);
         return checkAABBCollision(this.x, this.y, gridSize, gridSize, playerX, playerY, gridSize, gridSize);
       }
       return false;
@@ -367,6 +370,7 @@ void draw() {
       }
     }
     for (Enemy enemy : enemies) {
+      if(!enemy.checkexist()) continue;
       enemy.checkBoundary();
       enemy.move();
       enemy.checkCollisionWithBlock();
@@ -459,7 +463,21 @@ void keyPressed() {
               hasBlock = true;
               board[checkX][checkY] = 0;  // Remove the block and make it a path
             }
-            //else if()
+            else{ // If it's a enemy
+            // Find and update the monster
+              for (int i = 0; i < enemies.size(); i++) {
+                  Enemy monster = enemies.get(i);
+                  int mx=Math.round(monster.x / gridSize);
+                  int my=Math.round(monster.y / gridSize);
+                  println("mx="+ mx + " my = "+ my);
+                  if (mx == checkX && my == checkY) {
+                      // Update the monster state
+                      monster.exist = false;
+                      board[checkX][checkY] = 0;  // Remove the monster from the board
+                      break;
+                  }
+              }
+            }
           }
       }
 
