@@ -205,7 +205,12 @@ void loadlevel(int level){
   }
   JSONObject json = loadJSONObject("map.json"); // Load the JSON file
   JSONObject levelData = json.getJSONObject("level"+str(level)); // Get data for level1
-
+  if(levelData==null){
+      println("Invalid level "+level); return;
+  }
+  else{
+    println("try to load level"+level);
+  }
   // Get the board data
   JSONArray boardData = levelData.getJSONArray("board");
   board = new int[width/gridSize][height/gridSize];
@@ -229,7 +234,8 @@ void loadlevel(int level){
     int spd = enemyData.getInt("speed");
     enemies.add(new Enemy(x, y, spd) );
   }
-  
+
+  println("loaded level successfully");  
 
 }
 void setuplevel() {
@@ -342,7 +348,7 @@ void draw() {
     //image(startButton, 505, 410);
 
   }
-  else if(level==1){
+  else if(level>=1&&level<=6){
     background(back_image);
 
     // Draw the board
