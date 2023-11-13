@@ -13,7 +13,7 @@ PImage settingsButton, quitButton, levelSelectScreen;
 boolean isPlaying = true;
 boolean isMuted = false;
 int overallscore=0;
-
+boolean pass=false;
 int gridSize = 40;
 boolean isGameOver = false;
 int[][] board; // 0: empty, 1: block, 2: player, 3: enemy
@@ -209,7 +209,7 @@ void setuplevel(){
 
 void loadlevel(int level){
   overallscore=0;
-  if(level<0||level>6){
+  if(level<=0||level>6){
     println("Invalid level "+level); return;
   }
   JSONObject json = loadJSONObject("map.json"); // Load the JSON file
@@ -253,6 +253,9 @@ void setuplevel() {
   image(back_image, 0, 0, width, height);
   player.rewind(); 
   player.loop();
+  if(level>0){
+
+  }
   loadlevel(level);
 }
 
@@ -276,7 +279,7 @@ void setup() {
   quitButton.resize(100, 50); // Adjust size as needed
 
   size(1000, 800);
-  startButton = loadImage("startButton.jpg"); // Load the start button image
+  //startButton = loadImage("startButton.jpg"); // Load the start button image
   beginscr.resize(1000,800);
   background(beginscr);
 
@@ -397,6 +400,22 @@ void draw() {
           text("GAME OVER", width / 2, height / 2);
           noLoop();  // Stop updating the game
       }
+      pass = true;
+      for(int i=0;i<enemies.size();i++){
+        Enemy monster = enemies.get(i);
+        if(monster.checkexist()){pass=false;break;}
+      }
+      if (pass) {
+          fill(255);
+          textSize(48);
+          textAlign(CENTER, CENTER);
+          text("Pass level"+level, width / 2, height / 2);
+          noLoop();
+          delay(3000);
+          loop();
+          level=0;
+          setuplevel();
+      }
 
     if (isBlockMoving) {
       // Move the block towards its destination
@@ -486,6 +505,7 @@ void keyPressed() {
                       break;
                   }
               }
+              
             }
           }
       }

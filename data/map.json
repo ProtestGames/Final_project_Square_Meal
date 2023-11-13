@@ -29,7 +29,7 @@
         {
           "x": 240,
           "y": 440,
-          "speed": 0,
+          "speed": 2,
           "direction": [1, 0],
           "isStunned": false,
           "stunnedCounter": 0,
@@ -39,7 +39,18 @@
         {
           "x": 520,
           "y": 600,
-          "speed": 0,
+          "speed": 1,
+          "direction": [1, 0],
+          "isStunned": false,
+          "stunnedCounter": 0,
+          "exist": true,
+          "score":
+           20
+        },
+        {
+          "x": 80,
+          "y": 600,
+          "speed": 2,
           "direction": [1, 0],
           "isStunned": false,
           "stunnedCounter": 0,
