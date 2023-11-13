@@ -44,6 +44,6 @@ void displayTitle() {
   textSize(64);
   text("Circle Meal", width / 2, height / 2-50);
   textSize(48);
-  text("Presented by Group 1:\nGroup leader: Buffett",width / 2, height / 2+30);
+  text("Presented By Group 1:\nGroup Leader: Buffett",width / 2, height / 2+30);
   if(frameCount>500){titledone=true;}
 }

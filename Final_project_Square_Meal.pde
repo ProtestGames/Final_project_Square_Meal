@@ -8,12 +8,13 @@ AudioPlayer player;
 PImage muteIcon,unmuteIcon;
 PImage stoneblock,brickblock,back_image;
 PImage beginscr;
-PImage levelSelectImage;
+PImage levelSelectImage,instrucImage;
 PImage settingsButton, quitButton, levelSelectScreen;
 boolean isPlaying = true;
 boolean isMuted = false;
 int overallscore=0;
 boolean levelPassed = false;
+boolean showinstru = false ;
 boolean pass=false;
 int gridSize = 40;
 boolean isGameOver = false;
@@ -245,6 +246,8 @@ void setuplevel() {
 }
 
 void setup() {
+  instrucImage = loadImage("Instructions.png");
+  instrucImage.resize(600,600);
   beginscr = loadImage("Begin_Screen.jpg");
   muteIcon = loadImage("unmute.jpg");
   stoneblock = loadImage("block2.png");
@@ -314,6 +317,8 @@ void mouseClicked() {
     }
     if (mouseX > 750 && mouseX < 800 && mouseY > 700 && mouseY < 750) {
             // Open settings - implement settings functionality
+      if(showinstru==false)showinstru = true;
+      else showinstru = false;
     }
 
     // Check if the Quit button is clicked
@@ -360,6 +365,7 @@ void draw() {
       image(settingsButton, 750, 700); // Adjust position as needed
       image(quitButton, 850, 700); // Adjust position as needed
       if(showlevel) image(levelSelectImage, 200, 75);
+      if(showinstru) image(instrucImage, 200, 75);
       //image(startButton, 505, 410);
 
     }
@@ -455,6 +461,7 @@ void draw() {
 int movex[]={-1,0,1,0};
 int movey[]={0,1,0,-1};
 void keyPressed() {
+  if(level==0)return;
   int playerCellX = playerX / gridSize;
   int playerCellY = playerY / gridSize;
   if (keyCode == UP)dir=0;if (keyCode == RIGHT)dir=1;if (keyCode == DOWN)dir=2;if (keyCode == LEFT)dir=3;
@@ -514,7 +521,7 @@ void keyPressed() {
                   println("mx="+ mx + " my = "+ my);
                   if (mx == checkX && my == checkY) {
                       overallscore+=monster.getscore();
-                      println("current score= "+overallscore);
+                      println("current score = "+overallscore);
                       // Update the monster state
                       monster.exist = false;
                       board[checkX][checkY] = 0;  // Remove the monster from the board
