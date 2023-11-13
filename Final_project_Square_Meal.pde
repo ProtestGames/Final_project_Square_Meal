@@ -13,6 +13,7 @@ PImage settingsButton, quitButton, levelSelectScreen;
 boolean isPlaying = true;
 boolean isMuted = false;
 int overallscore=0;
+boolean levelPassed = false;
 boolean pass=false;
 int gridSize = 40;
 boolean isGameOver = false;
@@ -27,6 +28,8 @@ float destBlockX, destBlockY;  // Destination position
 float blockSpeed = 5;  // Speed at which block moves (adjust as needed)
 int stunnedDuration=300;
 int lastExecutedTime = 0;
+int passTime = -1; // -1 indicates that the level has not been passed yet
+
 
 
 int settingsButtonX, settingsButtonY, settingsButtonWidth, settingsButtonHeight;
@@ -362,78 +365,87 @@ void draw() {
 
   }
   else if(level>=1&&level<=6){
-    background(back_image);
+    if(!levelPassed){
+      background(back_image);
 
-    // Draw the board
-    for (int i = 0; i < board.length; i++) {
-      for (int j = 0; j < board[i].length; j++) {
-        if (board[i][j] == 1) {
-          image(stoneblock,i*gridSize,j*gridSize, gridSize*1, gridSize*1.7);
-          /*fill(100); // gray for blocks
-          rect(i*gridSize, j*gridSize, gridSize, gridSize);*/
+      // Draw the board
+      for (int i = 0; i < board.length; i++) {
+        for (int j = 0; j < board[i].length; j++) {
+          if (board[i][j] == 1) {
+            image(stoneblock,i*gridSize,j*gridSize, gridSize*1, gridSize*1.7);
+            /*fill(100); // gray for blocks
+            rect(i*gridSize, j*gridSize, gridSize, gridSize);*/
+          }
+          if (board[i][j] == 2) {
+            fill(0, 255, 0); // green for player
+            ellipse(i*gridSize + gridSize/2, j*gridSize + gridSize/2, gridSize, gridSize);
+          }
+          // ... Add drawing logic for other entities
         }
-        if (board[i][j] == 2) {
-          fill(0, 255, 0); // green for player
-          ellipse(i*gridSize + gridSize/2, j*gridSize + gridSize/2, gridSize, gridSize);
+      }
+      for (Enemy enemy : enemies) {
+        if(!enemy.checkexist()) continue;
+        enemy.checkBoundary();
+        enemy.move();
+        enemy.checkCollisionWithBlock();
+        enemy.update();
+        enemy.display();
+
+        if (enemy.checkCollisionWithPlayer()) {
+            isGameOver = true;
         }
-        // ... Add drawing logic for other entities
+      }
+
+        // Handle game over
+        if (isGameOver) {
+            fill(0);
+            textSize(48);
+            textAlign(CENTER, CENTER);
+            text("GAME OVER", width / 2, height / 2);
+            noLoop();  // Stop updating the game
+        }
+        //handle winnnig condiions
+        pass = true;
+        for(int i=0;i<enemies.size();i++){
+          Enemy monster = enemies.get(i);
+          if(monster.checkexist()){pass=false;break;}
+        }
+        if(pass){
+          levelPassed = true;
+          passTime = millis();
+        }
+
+        if (isBlockMoving) {
+          // Move the block towards its destination
+          movingBlockX += (destBlockX - movingBlockX) * blockSpeed * 0.01; // 0.01 is just a smoothing factor
+          movingBlockY += (destBlockY - movingBlockY) * blockSpeed * 0.01;
+
+          // Check if block has reached its destination (or very close)
+          if (dist(movingBlockX, movingBlockY, destBlockX, destBlockY) < 1) {
+              isBlockMoving = false;
+              board[floor(destBlockX/gridSize)][floor(destBlockY/gridSize)] = 1;  // Place the block at destination
+        }
+        
+        // Draw the moving block
+        //fill(100);
+        //rect(movingBlockX, movingBlockY, gridSize, gridSize);
+        image(stoneblock,movingBlockX, movingBlockY, gridSize*1, gridSize*1.7);
+
       }
     }
-    for (Enemy enemy : enemies) {
-      if(!enemy.checkexist()) continue;
-      enemy.checkBoundary();
-      enemy.move();
-      enemy.checkCollisionWithBlock();
-      enemy.update();
-      enemy.display();
+    else{
+      fill(255);
+      textSize(48);
+      textAlign(CENTER, CENTER);
+      text("Pass level " + level, width / 2, height / 2);
 
-      if (enemy.checkCollisionWithPlayer()) {
-          isGameOver = true;
+      if (millis() - passTime > 3000) {
+        levelPassed = false;
+        level = 0;
+        setuplevel();
       }
     }
 
-      // Handle game over
-      if (isGameOver) {
-          fill(0);
-          textSize(48);
-          textAlign(CENTER, CENTER);
-          text("GAME OVER", width / 2, height / 2);
-          noLoop();  // Stop updating the game
-      }
-      pass = true;
-      for(int i=0;i<enemies.size();i++){
-        Enemy monster = enemies.get(i);
-        if(monster.checkexist()){pass=false;break;}
-      }
-      if (pass) {
-          fill(255);
-          textSize(48);
-          textAlign(CENTER, CENTER);
-          text("Pass level"+level, width / 2, height / 2);
-          noLoop();
-          delay(3000);
-          loop();
-          level=0;
-          setuplevel();
-      }
-
-    if (isBlockMoving) {
-      // Move the block towards its destination
-      movingBlockX += (destBlockX - movingBlockX) * blockSpeed * 0.01; // 0.01 is just a smoothing factor
-      movingBlockY += (destBlockY - movingBlockY) * blockSpeed * 0.01;
-
-      // Check if block has reached its destination (or very close)
-      if (dist(movingBlockX, movingBlockY, destBlockX, destBlockY) < 1) {
-          isBlockMoving = false;
-          board[floor(destBlockX/gridSize)][floor(destBlockY/gridSize)] = 1;  // Place the block at destination
-      }
-      
-      // Draw the moving block
-      //fill(100);
-      //rect(movingBlockX, movingBlockY, gridSize, gridSize);
-      image(stoneblock,movingBlockX, movingBlockY, gridSize*1, gridSize*1.7);
-
-    }
   }
 }
 int movex[]={-1,0,1,0};
