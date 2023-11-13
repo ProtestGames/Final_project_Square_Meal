@@ -34,7 +34,7 @@ void drawCircles() {
     ellipse(x, y, circleSizes[i], circleSizes[i]);
   }
   // Check if the animation is done
-  if (frameCount > 240) {
+  if (frameCount > 200) {
     animationDone = true;
   }
 }
