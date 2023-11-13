@@ -453,6 +453,7 @@ void draw() {
         textSize(48);
         textAlign(CENTER, CENTER);
         text("Pass level " + level, width / 2, height / 2);
+        text("Your score is " + overallscore, width / 2, height / 2+50);
 
         if (millis() - passTime > 3000) {
           levelPassed = false;
