@@ -246,6 +246,7 @@ void setuplevel() {
 }
 
 void setup() {
+  oldenglish = loadFont("BerlinSansFB-Bold-48.vlw");
   instrucImage = loadImage("Instructions.png");
   instrucImage.resize(600,600);
   beginscr = loadImage("Begin_Screen.jpg");

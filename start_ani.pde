@@ -2,6 +2,7 @@
 float angle = 0;
 float maxDiameter = 100; // Maximum size of the circles
 int numCircles = 8; // Number of circles to animate
+PFont oldenglish;
 PVector[] circlePositions = new PVector[3*numCircles];
 float[] circleSizes = new float[3*numCircles];
 int[] circleColors = new int[3*numCircles];
@@ -39,9 +40,11 @@ void drawCircles() {
   }
 }
 
+
 void displayTitle() {
   fill(255);
   textSize(64);
+  textFont(oldenglish);
   text("Circle Meal", width / 2, height / 2-50);
   textSize(48);
   text("Presented By Group 1:\nGroup Leader: Buffett",width / 2, height / 2+30);
