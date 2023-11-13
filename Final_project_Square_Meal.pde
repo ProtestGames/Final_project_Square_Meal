@@ -6,7 +6,7 @@ import ddf.minim.*;
 Minim minim;
 AudioPlayer player;
 PImage muteIcon,unmuteIcon;
-PImage stoneblock,back_image;
+PImage stoneblock,brickblock,back_image;
 PImage beginscr;
 PImage levelSelectImage;
 PImage settingsButton, quitButton, levelSelectScreen;
@@ -190,25 +190,7 @@ class Enemy {
         //ellipse(enemex*gridSize+20, enemey*gridSize+20, gridSize, gridSize);
     }
 }
-/* old function
-void setuplevel(){
-  if(level==1){
-      enemies.add(new Enemy(width/4, height/2));
-      //size(800, 800);
-      board = new int[width/gridSize][height/gridSize];
-      playerX = width/2;
-      playerY = height/2;
-      board[playerX/gridSize][playerY/gridSize] = 2; // set player start position
-      for(int i=0;i<width/gridSize;i++){  ///set up the map
-        board[i][2]=1; 
-      }
-      board[5][5]=1;
-  }
-  else{
-    println("Invalid level "+level);
-  }
-  return;      
-}*/
+
 
 void loadlevel(int level){
   overallscore=0;
@@ -266,6 +248,8 @@ void setup() {
   beginscr = loadImage("Begin_Screen.jpg");
   muteIcon = loadImage("unmute.jpg");
   stoneblock = loadImage("block2.png");
+  brickblock = loadImage("block1.png");
+  brickblock.resize(50,78);
   unmuteIcon = loadImage("mute.jpg");
   levelSelectImage = loadImage("levelSelectImage.png"); // Replace with your level selection image file
   levelSelectImage.resize(600,500); // Adjust size as needed
@@ -386,7 +370,7 @@ void draw() {
         // Draw the board
         for (int i = 0; i < board.length; i++) {
           for (int j = 0; j < board[i].length; j++) {
-            if (board[i][j] == 1) {
+            if (board[i][j] == 1) { //block 1
               image(stoneblock,i*gridSize,j*gridSize, gridSize*1, gridSize*1.7);
               /*fill(100); // gray for blocks
               rect(i*gridSize, j*gridSize, gridSize, gridSize);*/
@@ -394,6 +378,9 @@ void draw() {
             if (board[i][j] == 2) {
               fill(0, 255, 0); // green for player
               ellipse(i*gridSize + gridSize/2, j*gridSize + gridSize/2, gridSize, gridSize);
+            }
+            if(board[i][j]==5){ //block 2
+              image(brickblock,i*gridSize,j*gridSize, gridSize*1, gridSize*1.7);
             }
             // ... Add drawing logic for other entities
           }
@@ -471,13 +458,13 @@ void keyPressed() {
   int playerCellX = playerX / gridSize;
   int playerCellY = playerY / gridSize;
   if (keyCode == UP)dir=0;if (keyCode == RIGHT)dir=1;if (keyCode == DOWN)dir=2;if (keyCode == LEFT)dir=3;
-  if (keyCode == UP && playerY > 0 && board[playerCellX][playerCellY - 1] != 1) {
+  if (keyCode == UP && playerY > 0 && board[playerCellX][playerCellY - 1] != 1&& board[playerCellX][playerCellY - 1] != 5) {
     playerY -= gridSize;dir=0;}
-  if (keyCode == DOWN && playerY < height - gridSize && board[playerCellX][playerCellY + 1] != 1) {
+  if (keyCode == DOWN && playerY < height - gridSize && board[playerCellX][playerCellY + 1] != 1 && board[playerCellX][playerCellY + 1] != 5) {
     playerY += gridSize;dir=2;}
-  if (keyCode == LEFT && playerX > 0 && board[playerCellX - 1][playerCellY] != 1) {
+  if (keyCode == LEFT && playerX > 0 && board[playerCellX - 1][playerCellY] != 1 && board[playerCellX - 1][playerCellY] != 5) {
     playerX -= gridSize;dir=3;}
-  if (keyCode == RIGHT && playerX < width - gridSize && board[playerCellX + 1][playerCellY] != 1) {
+  if (keyCode == RIGHT && playerX < width - gridSize && board[playerCellX + 1][playerCellY] != 1 && board[playerCellX + 1][playerCellY] != 5) {
     playerX += gridSize;dir=1;}
   //println("Key pressed: " + dir);
   if (keyCode == 32||key==' ' ) {
@@ -514,7 +501,7 @@ void keyPressed() {
           int checkX = playerCellX + movey[dir];
           int checkY = playerCellY + movex[dir];
           if (checkX >= 0 && checkX < board.length && checkY >= 0 && checkY < board[0].length) {
-            if (board[checkX][checkY] == 1) {  // If it's a block
+            if (board[checkX][checkY] == 1) {  // If it's a stoneblock (player can't swallow brick block)
               hasBlock = true;
               board[checkX][checkY] = 0;  // Remove the block and make it a path
             }
