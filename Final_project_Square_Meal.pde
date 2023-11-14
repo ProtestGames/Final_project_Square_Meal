@@ -15,7 +15,7 @@ boolean isMuted = false;
 int overallscore=0;
 boolean levelPassed = false;
 boolean showinstru = false ;
-boolean pass=false;
+boolean pass = false;
 int gridSize = 40;
 boolean isGameOver = false;
 int[][] board; // 0: empty, 1: block, 2: player, 3: enemy
@@ -187,8 +187,7 @@ class Enemy {
         if (this.isStunned) {
             fill(128, 0, 0); // Dark red for stunned enemy
         }
-        ellipse(this.x+20 /*gridSize/2*/, this.y+20  /*gridSize/2*/, gridSize, gridSize);
-        //ellipse(enemex*gridSize+20, enemey*gridSize+20, gridSize, gridSize);
+        ellipse(this.x+20, this.y+20, gridSize, gridSize);
     }
 }
 
@@ -484,7 +483,7 @@ void keyPressed() {
         // Find a suitable spot to throw the block, i.e., the first empty spot in the current direction
         while (nextCellX >= 0 && nextCellX < board.length && 
                nextCellY >= 0 && nextCellY < board[0].length && 
-               board[nextCellX][nextCellY] !=1) {
+               board[nextCellX][nextCellY] !=1 && board[nextCellX][nextCellY] !=5) {
             nextCellX += movey[dir];
             nextCellY += movex[dir];
         }
