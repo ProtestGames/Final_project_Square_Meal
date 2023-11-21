@@ -137,7 +137,7 @@ class Enemy {
       boolean hitBlock = false;
       for (int i = 0; i < board.length; i++) {
           for (int j = 0; j < board[0].length; j++) {
-              if (board[i][j] == 1) {
+              if (board[i][j] == 1 || board[i][j]==5) {
                   float blockX = i * gridSize;
                   float blockY = j * gridSize;
                   if (checkAABBCollision(this.x, this.y, gridSize, gridSize, blockX, blockY, gridSize, gridSize)) {
@@ -238,6 +238,7 @@ void setuplevel() {
   image(back_image, 0, 0, width, height);
   player.rewind(); 
   player.loop();
+  isGameOver = false;
   if(level>0){
 
   }
@@ -273,8 +274,8 @@ void setup() {
 
   //settingsButton = loadImage("settingsButton.jpg"); // Replace with your settings button image file
   quitButton = loadImage("quit.jpg"); // Replace with your quit button image file
-  settingsButton = loadImage("setting.jpg");
-  settingsButton.resize(50, 50); // Adjust size as needed
+  settingsButton = loadImage("setting.png");
+  settingsButton.resize(110, 55); // Adjust size as needed
   quitButton.resize(100, 50); // Adjust size as needed
 
   size(1000, 800);
@@ -315,15 +316,13 @@ void mouseClicked() {
               setuplevel(); // Load the level and start the game
       }
     }
-    if (mouseX > 750 && mouseX < 800 && mouseY > 700 && mouseY < 750) {
-            // Open settings - implement settings functionality
-      if(showinstru==false)showinstru = true;
-      else showinstru = false;
-    }
-
     // Check if the Quit button is clicked
-    if (mouseX > 850 && mouseX < 950 && mouseY > 700 && mouseY < 750) {
+    if (mouseX > 860 && mouseX < 960&& mouseY > 700 && mouseY < 750) {
         exit(); // Quit the game
+    }
+    if (mouseX > 730 && mouseX < 840 && mouseY > 695 && mouseY < 750) {
+        if(showinstru==false)showinstru = true; // Open settings - implement settings functionality
+        else showinstru = false;
     }
     if (mouseX > width/3 -20 && mouseX < width/2 + 180 &&
         mouseY > height -110 && mouseY < height-50 ) {
@@ -335,7 +334,7 @@ void mouseClicked() {
     }
 
     // Mute button
-    if (mouseX > 100 && mouseX < 180 && mouseY > height - 90 && mouseY < height - 10) {
+    if (mouseX > 100 && mouseX < 180 && mouseY > height - 100 && mouseY < height - 20) {
       if (!isMuted) {
         player.setGain(-80); 
         isMuted = true;
@@ -359,18 +358,18 @@ void draw() {
     if(level==0){
     // Display the start button on the screen
       background(beginscr);
-      if(isMuted)image(muteIcon, 100, height - 90, 80, 80);
-      else image(unmuteIcon, 100, height - 90, 80, 80);
+      if(isMuted)image(muteIcon, 100, height - 100, 80, 80);
+      else image(unmuteIcon, 100, height - 100, 80, 80);
 
-      image(settingsButton, 750, 700); // Adjust position as needed
-      image(quitButton, 850, 700); // Adjust position as needed
+      image(settingsButton, 730, 695); // Adjust position as needed
+      image(quitButton, 860, 700); // Adjust position as needed
       if(showlevel) image(levelSelectImage, 200, 75);
       if(showinstru) image(instrucImage, 200, 75);
       //image(startButton, 505, 410);
 
     }
     else if(level>=1&&level<=6){
-      if(!levelPassed){
+      if(!levelPassed&&!isGameOver){
         background(back_image);
 
         // Draw the board
@@ -401,17 +400,18 @@ void draw() {
 
           if (enemy.checkCollisionWithPlayer()) {
               isGameOver = true;
+              passTime = millis();
           }
         }
 
-          // Handle game over
-          if (isGameOver) {
+          // Handle game over ( Old version )
+          /*if (isGameOver) {
               fill(0);
               textSize(48);
               textAlign(CENTER, CENTER);
               text("GAME OVER", width / 2, height / 2);
               noLoop();  // Stop updating the game
-          }
+          }*/
           //handle winnnig condiions
           pass = true;
           for(int i=0;i<enemies.size();i++){
@@ -441,6 +441,20 @@ void draw() {
 
         }
       }
+      else if(isGameOver){
+        fill(255);
+        textSize(48);
+        textAlign(CENTER, CENTER);
+        text("Game Over you lose level " + level, width / 2, height / 2);
+        //text("Your score is " + overallscore, width / 2, height / 2+50);
+
+        if (millis() - passTime > 3000) {
+          levelPassed = false;
+          isGameOver = false;
+          level = 0;
+          setuplevel();
+        }
+      }
       else{
         fill(255);
         textSize(48);
@@ -464,15 +478,20 @@ void keyPressed() {
   if(level==0)return;
   int playerCellX = playerX / gridSize;
   int playerCellY = playerY / gridSize;
-  if (keyCode == UP)dir=0;if (keyCode == RIGHT)dir=1;if (keyCode == DOWN)dir=2;if (keyCode == LEFT)dir=3;
-  if (keyCode == UP && playerY > 0 && board[playerCellX][playerCellY - 1] != 1&& board[playerCellX][playerCellY - 1] != 5) {
-    playerY -= gridSize;dir=0;}
-  if (keyCode == DOWN && playerY < height - gridSize && board[playerCellX][playerCellY + 1] != 1 && board[playerCellX][playerCellY + 1] != 5) {
-    playerY += gridSize;dir=2;}
-  if (keyCode == LEFT && playerX > 0 && board[playerCellX - 1][playerCellY] != 1 && board[playerCellX - 1][playerCellY] != 5) {
-    playerX -= gridSize;dir=3;}
-  if (keyCode == RIGHT && playerX < width - gridSize && board[playerCellX + 1][playerCellY] != 1 && board[playerCellX + 1][playerCellY] != 5) {
-    playerX += gridSize;dir=1;}
+  if (keyCode == UP &&dir!=0)dir=0;
+  else if (keyCode == RIGHT && dir!=1)dir=1;
+  else if (keyCode == DOWN  && dir!=2)dir=2;
+  else if (keyCode == LEFT  && dir!=3)dir=3;
+  else{
+    if (keyCode == UP && playerY > 0 && board[playerCellX][playerCellY - 1] != 1&& board[playerCellX][playerCellY - 1] != 5) {
+      playerY -= gridSize;dir=0;}
+    if (keyCode == DOWN && playerY < height - gridSize && board[playerCellX][playerCellY + 1] != 1 && board[playerCellX][playerCellY + 1] != 5) {
+      playerY += gridSize;dir=2;}
+    if (keyCode == LEFT && playerX > 0 && board[playerCellX - 1][playerCellY] != 1 && board[playerCellX - 1][playerCellY] != 5) {
+      playerX -= gridSize;dir=3;}
+    if (keyCode == RIGHT && playerX < width - gridSize && board[playerCellX + 1][playerCellY] != 1 && board[playerCellX + 1][playerCellY] != 5) {
+      playerX += gridSize;dir=1;}
+  }
   //println("Key pressed: " + dir);
   if (keyCode == 32||key==' ' ) {
     if (hasBlock&&isBlockMoving==false) {
