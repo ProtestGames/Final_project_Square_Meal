@@ -258,7 +258,7 @@ void setup() {
   levelSelectImage = loadImage("levelSelectImage.png"); // Replace with your level selection image file
   levelSelectImage.resize(600,500); // Adjust size as needed
   back_image = loadImage("background.jpg");
-  back_image.resize(1000,800);
+  back_image.resize(1000,820);
   textAlign(CENTER, CENTER);
   textSize(64);
   // Initialize circles with random positions and colors
@@ -278,9 +278,9 @@ void setup() {
   settingsButton.resize(110, 55); // Adjust size as needed
   quitButton.resize(100, 50); // Adjust size as needed
 
-  size(1000, 800);
+  size(1000, 820);
   //startButton = loadImage("startButton.jpg"); // Load the start button image
-  beginscr.resize(1000,800);
+  beginscr.resize(1000,820);
   background(beginscr);
 
   // Display the start button on the screen
