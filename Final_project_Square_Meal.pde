@@ -221,6 +221,7 @@ void loadlevel(int level){
 
   // Get enemy data
   JSONArray enemiesData = levelData.getJSONArray("enemies");
+  enemies.clear();
   for (int i = 0; i < enemiesData.size(); i++) {
     JSONObject enemyData = enemiesData.getJSONObject(i);
     float x = enemyData.getFloat("x");
@@ -546,7 +547,7 @@ void keyPressed() {
                   int mx=Math.round(monster.x / gridSize);
                   int my=Math.round(monster.y / gridSize);
                   println("mx="+ mx + " my = "+ my);
-                  if (mx == checkX && my == checkY) {
+                  if (mx == checkX && my == checkY&&monster.exist) {
                       overallscore+=monster.getscore();
                       println("current score = "+overallscore);
                       // Update the monster state
