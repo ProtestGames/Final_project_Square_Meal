@@ -7,7 +7,7 @@ Minim minim;
 AudioPlayer player;
 PImage muteIcon,unmuteIcon;
 PImage stoneblock,brickblock,back_image;
-PImage beginscr;
+PImage beginscr,statusbar;
 PImage levelSelectImage,instrucImage;
 PImage settingsButton, quitButton, levelSelectScreen;
 boolean isPlaying = true;
@@ -30,8 +30,8 @@ float blockSpeed = 5;  // Speed at which block moves (adjust as needed)
 int stunnedDuration=300;
 int lastExecutedTime = 0;
 int passTime = -1; // -1 indicates that the level has not been passed yet
-
-
+int statusbarh=40;
+int startgametime,mins;
 
 int settingsButtonX, settingsButtonY, settingsButtonWidth, settingsButtonHeight;
 int quitButtonX, quitButtonY, quitButtonWidth, quitButtonHeight;
@@ -127,11 +127,11 @@ class Enemy {
     }
     void checkBoundary() {   //PERFECT I fix every bugs here 
       // Check for collision with game boundaries
-      boolean hitBoundary = (this.x < 0 || this.x+gridSize  > width || this.y < 0 || this.y+gridSize   > height);
+      boolean hitBoundary = (this.x < 0 || this.x+gridSize  > width || this.y < 0 || this.y+gridSize+statusbarh   > height);
       if(this.x<0) this.x=0;
       if(this.x+gridSize>width) this.x=width-gridSize;
       if(this.y<0) this.y=0;
-      if(this.y+gridSize>height) this.y=height-gridSize;
+      if(this.y+gridSize>height-statusbarh) this.y=height-gridSize-statusbarh;
 
       // Check for collision with blocks on the board
       boolean hitBlock = false;
@@ -207,7 +207,7 @@ void loadlevel(int level){
   }
   // Get the board data
   JSONArray boardData = levelData.getJSONArray("board");
-  board = new int[width/gridSize][height/gridSize];
+  board = new int[width/gridSize][height/gridSize-1];
   for (int i = 0; i < boardData.size(); i++) {
     JSONArray row = boardData.getJSONArray(i);
     for (int j = 0; j < row.size(); j++) {
@@ -230,7 +230,9 @@ void loadlevel(int level){
     enemies.add(new Enemy(x, y, spd,sco) );
   }
 
-  println("loaded level successfully");  
+  println("loaded level successfully"); 
+  startgametime = millis(); 
+  mins=0;
 
 }
 void setuplevel() {
@@ -253,12 +255,13 @@ void setup() {
   muteIcon = loadImage("unmute.jpg");
   stoneblock = loadImage("block2.png");
   brickblock = loadImage("block1.png");
+  statusbar = loadImage("statusbar.png");
   brickblock.resize(50,78);
   unmuteIcon = loadImage("mute.jpg");
   levelSelectImage = loadImage("levelSelectImage.png"); // Replace with your level selection image file
   levelSelectImage.resize(600,500); // Adjust size as needed
   back_image = loadImage("background.jpg");
-  back_image.resize(1000,820);
+  back_image.resize(1000,840);
   textAlign(CENTER, CENTER);
   textSize(64);
   // Initialize circles with random positions and colors
@@ -277,10 +280,10 @@ void setup() {
   settingsButton = loadImage("setting.png");
   settingsButton.resize(110, 55); // Adjust size as needed
   quitButton.resize(100, 50); // Adjust size as needed
-
-  size(1000, 820);
+  statusbar.resize(1000,40);
+  size(1000, 840);
   //startButton = loadImage("startButton.jpg"); // Load the start button image
-  beginscr.resize(1000,820);
+  beginscr.resize(1000,840);
   background(beginscr);
 
   // Display the start button on the screen
@@ -317,10 +320,10 @@ void mouseClicked() {
       }
     }
     // Check if the Quit button is clicked
-    if (mouseX > 860 && mouseX < 960&& mouseY > 700 && mouseY < 750) {
+    if (mouseX > 860 && mouseX < 960&& mouseY > 700 && mouseY < 750+statusbarh) {
         exit(); // Quit the game
     }
-    if (mouseX > 730 && mouseX < 840 && mouseY > 695 && mouseY < 750) {
+    if (mouseX > 730 && mouseX < 840 && mouseY > 695 && mouseY < 750+statusbarh) {
         if(showinstru==false)showinstru = true; // Open settings - implement settings functionality
         else showinstru = false;
     }
@@ -358,11 +361,11 @@ void draw() {
     if(level==0){
     // Display the start button on the screen
       background(beginscr);
-      if(isMuted)image(muteIcon, 100, height - 100, 80, 80);
-      else image(unmuteIcon, 100, height - 100, 80, 80);
+      if(isMuted)image(unmuteIcon, 100, height - 100, 80, 80);
+      else image(muteIcon, 100, height - 100, 80, 80);
 
-      image(settingsButton, 730, 695); // Adjust position as needed
-      image(quitButton, 860, 700); // Adjust position as needed
+      image(settingsButton, 730, 695+statusbarh); // Adjust position as needed
+      image(quitButton, 860, 700+statusbarh); // Adjust position as needed
       if(showlevel) image(levelSelectImage, 200, 75);
       if(showinstru) image(instrucImage, 200, 75);
       //image(startButton, 505, 410);
@@ -371,7 +374,6 @@ void draw() {
     else if(level>=1&&level<=6){
       if(!levelPassed&&!isGameOver){
         background(back_image);
-
         // Draw the board
         for (int i = 0; i < board.length; i++) {
           for (int j = 0; j < board[i].length; j++) {
@@ -438,8 +440,14 @@ void draw() {
           //fill(100);
           //rect(movingBlockX, movingBlockY, gridSize, gridSize);
           image(stoneblock,movingBlockX, movingBlockY, gridSize*1, gridSize*1.7);
-
         }
+        image(statusbar,0,800);
+        textSize(32);
+        fill(40,200,73);
+        mins=(int)((millis()-startgametime)/1000/60);
+        int sceond = (int)((millis()-startgametime)/1000)%60;
+        text(mins+" : "+sceond ,380,815);
+        text(overallscore,800,815);
       }
       else if(isGameOver){
         fill(255);
@@ -485,7 +493,7 @@ void keyPressed() {
   else{
     if (keyCode == UP && playerY > 0 && board[playerCellX][playerCellY - 1] != 1&& board[playerCellX][playerCellY - 1] != 5) {
       playerY -= gridSize;dir=0;}
-    if (keyCode == DOWN && playerY < height - gridSize && board[playerCellX][playerCellY + 1] != 1 && board[playerCellX][playerCellY + 1] != 5) {
+    if (keyCode == DOWN && playerY < height - gridSize-statusbarh && board[playerCellX][playerCellY + 1] != 1 && board[playerCellX][playerCellY + 1] != 5) {
       playerY += gridSize;dir=2;}
     if (keyCode == LEFT && playerX > 0 && board[playerCellX - 1][playerCellY] != 1 && board[playerCellX - 1][playerCellY] != 5) {
       playerX -= gridSize;dir=3;}
