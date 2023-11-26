@@ -10,6 +10,7 @@ PImage stoneblock,brickblock,back_image;
 PImage beginscr,statusbar;
 PImage levelSelectImage,instrucImage;
 PImage settingsButton, quitButton, levelSelectScreen;
+PImage[] Enemyleft,Enemyright;
 boolean isPlaying = true;
 boolean isMuted = false;
 int overallscore=0;
@@ -32,7 +33,7 @@ int lastExecutedTime = 0;
 int passTime = -1; // -1 indicates that the level has not been passed yet
 int statusbarh=40;
 int startgametime,mins;
-
+int Enemy_num=0;
 int settingsButtonX, settingsButtonY, settingsButtonWidth, settingsButtonHeight;
 int quitButtonX, quitButtonY, quitButtonWidth, quitButtonHeight;
 
@@ -187,6 +188,7 @@ class Enemy {
         if (this.isStunned) {
             fill(128, 0, 0); // Dark red for stunned enemy
         }
+        
         ellipse(this.x+20, this.y+20, gridSize, gridSize);
     }
 }
@@ -263,6 +265,11 @@ void setup() {
   levelSelectImage.resize(600,500); // Adjust size as needed
   back_image = loadImage("background.jpg");
   back_image.resize(1000,840);
+  for(int i=1;i<=7;i++){
+    String str = "monster"+str(i);
+    Enemyleft[i] = loadImage(str);
+    Enemyright[i]=loadImage(str+"-1");
+  }
   textAlign(CENTER, CENTER);
   textSize(64);
   // Initialize circles with random positions and colors
