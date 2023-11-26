@@ -10,7 +10,7 @@ PImage stoneblock,brickblock,back_image;
 PImage beginscr,statusbar;
 PImage levelSelectImage,instrucImage;
 PImage settingsButton, quitButton, levelSelectScreen;
-PImage[] Enemyleft,Enemyright;
+PImage[] Enemyleft = new PImage[10],Enemyright = new PImage[10];
 boolean isPlaying = true;
 boolean isMuted = false;
 int overallscore=0;
@@ -184,12 +184,12 @@ class Enemy {
     }
 
     void display() {
-        fill(255, 0, 0); // Red for enemy
+        //fill(255, 0, 0); // Red for enemy
         if (this.isStunned) {
             fill(128, 0, 0); // Dark red for stunned enemy
         }
-        
-        ellipse(this.x+20, this.y+20, gridSize, gridSize);
+        image(Enemyleft[Enemy_num],this.x,this.y,Enemyleft[Enemy_num].width/5, Enemyleft[Enemy_num].height/5);
+        //ellipse(this.x+20, this.y+20, gridSize, gridSize);
     }
 }
 
@@ -265,10 +265,13 @@ void setup() {
   levelSelectImage.resize(600,500); // Adjust size as needed
   back_image = loadImage("background.jpg");
   back_image.resize(1000,840);
-  for(int i=1;i<=7;i++){
-    String str = "monster"+str(i);
-    Enemyleft[i] = loadImage(str);
-    Enemyright[i]=loadImage(str+"-1");
+  for(int i=0;i<7;i++){
+    String s = "monster"+str(i+1);
+    String s2 = s;
+    s+=".png";
+    s2+="-1.png";
+    Enemyleft[i] = loadImage(s);
+    Enemyright[i] = loadImage(s2);
   }
   textAlign(CENTER, CENTER);
   textSize(64);
@@ -361,6 +364,8 @@ void mouseClicked() {
 
 void draw() {
   background(0);
+  Enemy_num++;
+  Enemy_num%=7;
   if (!animationDone) {
     drawCircles();
   }else if(animationDone&&!titledone){
