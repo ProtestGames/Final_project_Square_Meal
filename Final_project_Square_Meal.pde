@@ -11,6 +11,8 @@ PImage beginscr,statusbar;
 PImage levelSelectImage,instrucImage;
 PImage settingsButton, quitButton, levelSelectScreen;
 PImage[] Enemyleft = new PImage[10],Enemyright = new PImage[10];
+PImage monsterstun;
+PImage monsterstun_1;
 boolean isPlaying = true;
 boolean isMuted = false;
 int overallscore=0;
@@ -31,6 +33,7 @@ float blockSpeed = 5;  // Speed at which block moves (adjust as needed)
 int stunnedDuration=300;
 int lastExecutedTime = 0;
 int passTime = -1; // -1 indicates that the level has not been passed yet
+int anitime=0;
 int statusbarh=40;
 int startgametime,mins;
 int Enemy_num=0;
@@ -186,9 +189,16 @@ class Enemy {
     void display() {
         //fill(255, 0, 0); // Red for enemy
         if (this.isStunned) {
-            fill(128, 0, 0); // Dark red for stunned enemy
+            //fill(128, 0, 0); // Dark red for stunned enemy
+          if(this.direction[0]==-1)
+            image(monsterstun,this.x,this.y,Enemyleft[Enemy_num].width, Enemyleft[Enemy_num].height);
+          else
+            image(monsterstun_1,this.x,this.y,Enemyleft[Enemy_num].width, Enemyleft[Enemy_num].height);
         }
-        image(Enemyleft[Enemy_num],this.x,this.y,Enemyleft[Enemy_num].width/5, Enemyleft[Enemy_num].height/5);
+        else if(this.direction[0]==-1)
+          image(Enemyleft[Enemy_num],this.x,this.y,Enemyleft[Enemy_num].width, Enemyleft[Enemy_num].height);
+        else
+          image(Enemyright[Enemy_num],this.x,this.y,Enemyright[Enemy_num].width, Enemyright[Enemy_num].height);
         //ellipse(this.x+20, this.y+20, gridSize, gridSize);
     }
 }
@@ -265,6 +275,10 @@ void setup() {
   levelSelectImage.resize(600,500); // Adjust size as needed
   back_image = loadImage("background.jpg");
   back_image.resize(1000,840);
+  monsterstun = loadImage("monster_stunned.png");
+  monsterstun_1 = loadImage("monster_stunned_1.png");
+  monsterstun.resize(gridSize,gridSize);
+  monsterstun_1.resize(gridSize,gridSize);
   for(int i=0;i<7;i++){
     String s = "monster"+str(i+1);
     String s2 = s;
@@ -272,6 +286,8 @@ void setup() {
     s2+="-1.png";
     Enemyleft[i] = loadImage(s);
     Enemyright[i] = loadImage(s2);
+    Enemyleft[i].resize(gridSize,gridSize);
+    Enemyright[i].resize(gridSize,gridSize);
   }
   textAlign(CENTER, CENTER);
   textSize(64);
@@ -364,8 +380,11 @@ void mouseClicked() {
 
 void draw() {
   background(0);
-  Enemy_num++;
-  Enemy_num%=7;
+  if(millis()-anitime>100){
+    anitime=millis();
+    Enemy_num++;
+    Enemy_num%=7;
+  }
   if (!animationDone) {
     drawCircles();
   }else if(animationDone&&!titledone){
