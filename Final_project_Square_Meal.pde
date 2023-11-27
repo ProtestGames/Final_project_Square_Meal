@@ -10,7 +10,7 @@ PImage stoneblock,brickblock,back_image;
 PImage beginscr,statusbar;
 PImage levelSelectImage,instrucImage;
 PImage settingsButton, quitButton, levelSelectScreen;
-PImage[] Enemyleft = new PImage[10],Enemyright = new PImage[10];
+PImage[] Enemyleft = new PImage[10],Enemyright = new PImage[10],Playerleft = new PImage[10],Playerright = new PImage[10];
 PImage monsterstun;
 PImage monsterstun_1;
 boolean isPlaying = true;
@@ -403,6 +403,16 @@ void setup() {
     Enemyleft[i].resize(gridSize,gridSize);
     Enemyright[i].resize(gridSize,gridSize);
   }
+  for(int i=0;i<7;i++){
+    String s = "player"+str(i+1);
+    String s2 = s;
+    s+=".png";
+    s2+="-1.png";
+    Playerleft[i] = loadImage(s);
+    Playerright[i] = loadImage(s2);
+    Playerleft[i].resize(gridSize,gridSize);
+    Playerright[i].resize(gridSize,gridSize);
+  }
   textAlign(CENTER, CENTER);
   textSize(64);
   // Initialize circles with random positions and colors
@@ -529,8 +539,9 @@ void draw() {
               rect(i*gridSize, j*gridSize, gridSize, gridSize);*/
             }
             if (board[i][j] == 2) {
-              fill(0, 255, 0); // green for player
-              ellipse(i*gridSize + gridSize/2, j*gridSize + gridSize/2, gridSize, gridSize);
+              //fill(0, 255, 0); // green for player
+              image(Playerleft[Enemy_num],i*gridSize + gridSize/2-15, j*gridSize + gridSize/2-15,Playerleft[Enemy_num].width,Playerleft[Enemy_num].height);
+              //ellipse(i*gridSize + gridSize/2, j*gridSize + gridSize/2, gridSize, gridSize);
             }
             if(board[i][j]==5){ //block 2
               image(brickblock,i*gridSize,j*gridSize, gridSize*1, gridSize*1.7);
