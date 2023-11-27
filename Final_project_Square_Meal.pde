@@ -203,6 +203,104 @@ class Enemy {
     }
 }
 
+int getTimestamp() {
+    return (millis() % 1000);
+}
+
+
+class Mirage extends Enemy {
+    private boolean isHidden = false;
+    private int hideCooldown = int(random(100,400));
+    private int hideTimestamp = 0;
+    private int lastHideTimestamp = 0;
+    private int MAX_HIDE_DURATION = 20;
+    private float HIDE_CHANCE = 4.34;
+    
+    //default properties
+    private int enemex, enemey;
+    private int lastx, lasty;
+    
+    Mirage(float x, float y, int speed, int score) {
+        super(x, y, speed, score);
+    }
+    
+    public void display() {
+        if (this.isStunned) {
+            fill(140, 84, 4); // Dark red for stunned enemy
+        } else {
+            fill(247, 165, 49); // Red for enemy
+        }
+        if(!this.isHidden)
+          ellipse(this.x + 20, this.y + 20, gridSize, gridSize);
+        else
+          image(stoneblock,this.x,this.y,gridSize,gridSize*1.7);
+    }
+
+    private boolean checkHideStatus() {
+        if (this.isHidden) {
+           if (getTimestamp() > this.hideTimestamp) {
+                this.isHidden = false;
+                display();
+                return false;
+            }
+            return true;
+        }
+        
+        return false;
+    }
+
+    public void move() {
+        if (checkHideStatus()) {
+          unhide();
+          return;
+        }
+        if (isStunned) {
+          return;
+        }
+        if(!this.isHidden)
+          hide();
+        unhide();
+        this.x += this.direction[0] * enemySpeed;
+        this.y += this.direction[1] * enemySpeed;
+        enemex = int(this.x / gridSize);
+        enemey = int(this.y / gridSize);
+        if (board[lastx][lasty] == 3) {
+            board[lastx][lasty] = 0;
+        }
+        lastx = enemex;lasty = enemey;
+        if (board[enemex][enemey] == 0) {
+            board[enemex][enemey] = 3;
+        }
+    }
+
+    private void hide() {
+        if (this.isHidden) {
+            return;
+        }
+        if (random(1,6) > this.HIDE_CHANCE) {
+            return;
+        }
+        if ((getTimestamp() - this.lastHideTimestamp) < this.hideCooldown+10) {
+            return;
+        }
+        //replace self with stone block here
+        this.isHidden = true;
+        this.hideTimestamp = getTimestamp();
+        println("HIDE!");
+    }
+
+    private void unhide() {
+        if (!isHidden||getTimestamp()-this.hideTimestamp<2) {
+          println(getTimestamp()+" - "+this.hideTimestamp);
+            return;
+        }
+        this.lastHideTimestamp = getTimestamp();
+        this.isHidden = false;
+        println("UNHIDE!");
+        display();
+        //deletes the stone block here
+    }
+}
 
 void loadlevel(int level){
   overallscore=0;
@@ -236,11 +334,27 @@ void loadlevel(int level){
   enemies.clear();
   for (int i = 0; i < enemiesData.size(); i++) {
     JSONObject enemyData = enemiesData.getJSONObject(i);
+    String enemyType;
+    if (enemyData.isNull("type")) {
+            enemyType = "default";
+    } else {
+        enemyType = enemyData.getString("type");
+    }
+
     float x = enemyData.getFloat("x");
     float y = enemyData.getFloat("y");
     int spd = enemyData.getInt("speed");
     int sco = enemyData.getInt("score");
-    enemies.add(new Enemy(x, y, spd,sco) );
+    switch(enemyType) {
+        case "default":
+            enemies.add(new Enemy(x, y, spd,sco));
+            break;
+
+        case "mirage":
+            enemies.add(new Mirage(x, y, spd, sco));
+            break;
+    }
+
   }
 
   println("loaded level successfully"); 
