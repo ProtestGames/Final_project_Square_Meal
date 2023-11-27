@@ -364,6 +364,7 @@
       "playerY": 0,
       "enemies": [
         {
+          "type":"mirage",
           "x": 40,
           "y": 560,
           "speed": 5,
