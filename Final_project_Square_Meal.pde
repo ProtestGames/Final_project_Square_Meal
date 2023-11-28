@@ -550,8 +550,10 @@ void draw() {
             if (board[i][j] == 2) {
               //fill(0, 255, 0); // green for player
               //ellipse(i*gridSize + gridSize/2, j*gridSize + gridSize/2, gridSize, gridSize);
-              if(dir==2||dir==3)image(Playerleft[Enemy_num],i*gridSize /*+ gridSize/2*/, j*gridSize /*+ gridSize/2*/, gridSize, gridSize);
-              else image(Playerright[Enemy_num],i*gridSize/* + gridSize/2*/, j*gridSize /*+ gridSize/2*/, gridSize, gridSize);
+              // if(dir==2||dir==3)image(Playerleft[Enemy_num],i*gridSize /*+ gridSize/2*/, j*gridSize /*+ gridSize/2*/, gridSize, gridSize);
+              // else image(Playerright[Enemy_num],i*gridSize/* + gridSize/2*/, j*gridSize /*+ gridSize/2*/, gridSize, gridSize);
+              if (facing == 1) image(Playerright[Enemy_num],i*gridSize/* + gridSize/2*/, j*gridSize /*+ gridSize/2*/, gridSize, gridSize);
+              else image(Playerleft[Enemy_num],i*gridSize /*+ gridSize/2*/, j*gridSize /*+ gridSize/2*/, gridSize, gridSize);
             }
             if(board[i][j]==5){ //block 2
               image(brickblock,i*gridSize,j*gridSize, gridSize*1, gridSize*1.7);
