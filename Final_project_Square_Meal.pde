@@ -540,7 +540,9 @@ void draw() {
             }
             if (board[i][j] == 2) {
               //fill(0, 255, 0); // green for player
+              if(dir==2||dir==3)
               image(Playerleft[Enemy_num],i*gridSize + gridSize/2-15, j*gridSize + gridSize/2-15,Playerleft[Enemy_num].width,Playerleft[Enemy_num].height);
+              else image(Playerright[Enemy_num],i*gridSize + gridSize/2-15, j*gridSize + gridSize/2-15,Playerright[Enemy_num].width,Playerright[Enemy_num].height);
               //ellipse(i*gridSize + gridSize/2, j*gridSize + gridSize/2, gridSize, gridSize);
             }
             if(board[i][j]==5){ //block 2
