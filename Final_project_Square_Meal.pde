@@ -5,8 +5,7 @@ import ddf.minim.*;
 
 // Sound parts
 Minim minim;
-AudioPlayer player, coinplayer;
-PImage muteIcon, unmuteIcon;
+AudioPlayer bgmPlayer, coinplayer;
 PImage stoneblock, brickblock, back_image;
 PImage beginscr, statusbar;
 PImage levelSelectImage, instrucImage;
@@ -47,6 +46,9 @@ int quitButtonX, quitButtonY, quitButtonWidth, quitButtonHeight;
 
 int movex[] = { - 1,0,1,0};
 int movey[] = {0,1,0, -1};
+
+Button aboutButton;
+Button volumeButton;
 
 PImage startButton;
 int level = 0;
@@ -139,8 +141,8 @@ void loadlevel(int level) {
 
 void setuplevel() {
     image(back_image, 0, 0, width, height);
-    player.rewind();
-    player.loop();
+    bgmPlayer.rewind();
+    bgmPlayer.loop();
     isGameOver = false;
     if (level > 0) {
         
@@ -153,12 +155,10 @@ void setup() {
     instrucImage = loadImage("Instructions.png");
     instrucImage.resize(600, 600);
     beginscr = loadImage("Begin_Screen.jpg");
-    muteIcon = loadImage("unmute.jpg");
     stoneblock = loadImage("block2.png");
     brickblock = loadImage("block1.png");
     statusbar = loadImage("statusbar.png");
     brickblock.resize(50, 78);
-    unmuteIcon = loadImage("mute.jpg");
     levelSelectImage = loadImage("levelSelectImage.png"); // Replace with your level selection image file
     levelSelectImage.resize(600, 500); // Adjust size as needed
     back_image = loadImage("background.jpg");
@@ -207,9 +207,11 @@ void setup() {
     }
     
     minim = new Minim(this);
-    player = minim.loadFile("BGM.mp3");
-    player.setGain( -30);
-    player.loop();
+    bgmPlayer = minim.loadFile("BGM.mp3");
+    aboutButton = new Button(100, 730, 0.8, "about-1.png", "about-2.png", "about-3.png");
+    volumeButton = new Button(100, 50, 0.8, "mute-1.png", "mute-2.png", "mute-3.png");
+    bgmPlayer.setGain( -30);
+    bgmPlayer.loop();
     coinplayer = minim.loadFile("gold_coin.wav");
     
     settingsButton = loadImage("setting.png");
@@ -267,18 +269,6 @@ void mouseClicked() {
             else
                 showlevel = false;
         }
-        
-        // Mute button
-        if (mouseX > 100 && mouseX < 180 && mouseY > height - 100 && mouseY < height - 20) {
-            if (!isMuted) {
-                player.setGain( -80);
-                isMuted = true;
-            } else {
-                player.setGain( -30);
-                player.setBalance(0);
-                isMuted = false;
-            }
-        }
     }
 }
 
@@ -301,15 +291,12 @@ void draw() {
         if (level == 0) {
             background(beginscr);
             
-            if (isMuted) {
-                image(unmuteIcon, 100, height - 100, 80, 80);
-            } else {
-                image(muteIcon, 100, height - 100, 80, 80);
-            }
-            
             image(settingsButton, 730, 695 + statusbarh);
             image(quitButton, 860, 700 + statusbarh);
-            
+            aboutButton.update();
+            aboutButton.display();
+            volumeButton.update();
+            volumeButton.display();
             if (showlevel) {
                 image(levelSelectImage, 200, 75);
             }
@@ -516,4 +503,87 @@ void keyPressed() {
     
     board[playerCellX][playerCellY] = 0;
     board[playerX / gridSize][playerY / gridSize] = 2;
+}
+
+class Button {
+    PImage idleImage;
+    PImage hoverImage;
+    PImage clickImage;
+    float x, y, w, h;
+    boolean isHovered = false;
+    boolean isClicked = false;
+    
+    Button(float x, float y, float scale, String idlePath, String hoverPath, String clickPath) {
+        this.x = x;
+        this.y = y;
+        
+        idleImage = loadImage(idlePath);
+        hoverImage = loadImage(hoverPath);
+        clickImage = loadImage(clickPath);
+        
+        this.w = idleImage.width * scale;
+        this.h = idleImage.height * scale;
+    }
+    
+    void changeImg(String idlePath, String hoverPath, String clickPath) {
+        idleImage = loadImage(idlePath);
+        hoverImage = loadImage(hoverPath);
+        clickImage = loadImage(clickPath);
+    }
+    
+    void display() {
+        if (isClicked) {
+            image(clickImage, x, y, w, h);
+        } else if (isHovered) {
+            image(hoverImage, x, y, w, h);
+        } else {
+            image(idleImage, x, y, w, h);
+        }
+    }
+    
+    boolean isMouseOver() {
+        return mouseX > x && mouseX < x + w && mouseY > y && mouseY < y + h;
+    }
+    
+    void update() {
+        if (isMouseOver()) {
+            isHovered = true;
+        } else {
+            isHovered = false;
+        }
+    }
+    
+    boolean mouseClicked() {
+        if (isMouseOver()) {
+            isClicked = true;
+            return true;
+        }
+        return false;
+    }
+    
+    void reset() {
+        isClicked = false;
+    }
+}
+
+void mousePressed() {
+    if (aboutButton.mouseClicked()) {
+        // Handle button click event
+        println("about");
+    }
+    if (volumeButton.mouseClicked()) {
+        if (!isMuted) {
+            volumeButton.changeImg("unmute-1.png","unmute-2.png","unmute-3.png");
+            bgmPlayer.setGain( -80);
+        } else {
+            volumeButton.changeImg("mute-1.png","mute-2.png","mute-3.png");
+            bgmPlayer.setGain( -30);
+        }
+        isMuted = !isMuted;
+    }
+}
+
+void mouseReleased() {
+    aboutButton.reset();
+    volumeButton.reset();
 }
