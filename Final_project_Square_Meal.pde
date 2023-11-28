@@ -49,8 +49,8 @@ Button aboutButton;
 Button volumeButton;
 Button quitButton;
 Button settingsButton;
+Button startButton;
 
-PImage startButton;
 int level = 0;
 ArrayList<Enemy> enemies = new ArrayList<Enemy>();
 color c = color(100, 101, 120);
@@ -207,10 +207,11 @@ void setup() {
     }
     
     
-    aboutButton = new Button(100, 730, 0.8, "about-1.png", "about-2.png", "about-3.png");
-    volumeButton = new Button(730, 730, 0.8, "mute-1.png", "mute-2.png", "mute-3.png");
-    quitButton = new Button(850, 50, 0.8, "quit-1.png", "quit-2.png", "quit-3.png");
-    settingsButton = new Button(850, 730, 0.8, "settings-1.png", "settings-2.png", "settings-3.png");
+    aboutButton = new Button(70, 730, 0.8, "about-1.png", "about-2.png", "about-3.png");
+    volumeButton = new Button(760, 730, 0.8, "mute-1.png", "mute-2.png", "mute-3.png");
+    quitButton = new Button(860, 50, 0.8, "quit-1.png", "quit-2.png", "quit-3.png");
+    settingsButton = new Button(860, 730, 0.8, "settings-1.png", "settings-2.png", "settings-3.png");
+    startButton = new Button(250, 730, 0.8, "start-1.png", "start-2.png", "start-3.png");
     
     minim = new Minim(this);
     bgmPlayer = minim.loadFile("BGM.mp3");
@@ -252,15 +253,6 @@ void mouseClicked() {
                 setuplevel(); // Load the level and start the game
             }
         }
-        
-        if (mouseX > width / 3 - 20 && mouseX < width / 2 + 180 && 
-            mouseY > height - 110 && mouseY < height - 50) {
-            // If clicked on the start button, let the user choose a level
-            if (showlevel == false)
-                showlevel = true;
-            else
-                showlevel = false;
-        }
     }
 }
 
@@ -291,6 +283,8 @@ void draw() {
             quitButton.display();
             settingsButton.update();
             settingsButton.display();
+            startButton.update();
+            startButton.display();
             
             if (showlevel) {
                 image(levelSelectImage, 200, 75);
@@ -579,8 +573,10 @@ void mousePressed() {
         exit();
     }
     if (settingsButton.mouseClicked()) {
-        if (showinstru == false) showinstru = true; // Open settings - implement settings functionality
-        else showinstru = false;
+        showinstru = !showinstru;
+    }
+    if (startButton.mouseClicked()) {
+        showlevel = !showlevel;
     }
 }
 
@@ -589,4 +585,5 @@ void mouseReleased() {
     volumeButton.reset();
     quitButton.reset();
     settingsButton.reset();
+    startButton.reset();
 }
