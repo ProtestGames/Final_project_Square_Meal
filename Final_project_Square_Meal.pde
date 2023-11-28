@@ -5,7 +5,7 @@ import ddf.minim.*;
 
 // Sound parts
 Minim minim;
-AudioPlayer bgmPlayer, coinplayer;
+AudioPlayer bgmPlayer, coinplayer,swallowplayer;
 PImage stoneblock, brickblock, back_image;
 PImage beginscr, statusbar;
 PImage levelSelectImage, instrucImage;
@@ -212,6 +212,8 @@ void setup() {
     bgmPlayer.setGain( -30);
     bgmPlayer.loop();
     coinplayer = minim.loadFile("gold_coin.wav");
+    swallowplayer = minim.loadFile("Swallow.mp3");
+    swallowplayer.setGain(30);
     
     statusbar.resize(1000, 40);
     size(1000, 840);
@@ -385,7 +387,6 @@ void draw() {
 
 void keyPressed() {
     if (level == 0) return;
-    
     int playerCellX = playerX / gridSize;
     int playerCellY = playerY / gridSize;
     
@@ -398,6 +399,7 @@ void keyPressed() {
             if (board[playerCellX][playerCellY - 1] == 6) {
                 board[playerCellX][playerCellY - 1] = 0;
                 overallscore += 10;
+                coinplayer.rewind();
                 coinplayer.play();
             }
             playerY -= gridSize;
@@ -408,6 +410,7 @@ void keyPressed() {
             if (board[playerCellX][playerCellY + 1] == 6) {
                 board[playerCellX][playerCellY + 1] = 0;
                 overallscore += 10;
+                coinplayer.rewind();
                 coinplayer.play();
             }
             playerY += gridSize;
@@ -418,6 +421,7 @@ void keyPressed() {
             if (board[playerCellX - 1][playerCellY] == 6) {
                 board[playerCellX - 1][playerCellY] = 0;
                 overallscore += 10;
+                coinplayer.rewind();
                 coinplayer.play();
             }
             playerX -= gridSize;
@@ -429,6 +433,7 @@ void keyPressed() {
             if (board[playerCellX + 1][playerCellY] == 6) {
                 board[playerCellX + 1][playerCellY] = 0;
                 overallscore += 10;
+                coinplayer.rewind();
                 coinplayer.play();
             }
             playerX += gridSize;
@@ -475,6 +480,8 @@ void keyPressed() {
                         
                         if (mx == checkX && my == checkY && monster.exist) {
                             overallscore += monster.getscore();
+                            swallowplayer.rewind();
+                            swallowplayer.play();
                             monster.exist = false;
                             board[checkX][checkY] = 0;
                             break;
