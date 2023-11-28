@@ -9,7 +9,7 @@ AudioPlayer bgmPlayer, coinplayer;
 PImage stoneblock, brickblock, back_image;
 PImage beginscr, statusbar;
 PImage levelSelectImage, instrucImage;
-PImage settingsButton, levelSelectScreen;
+PImage levelSelectScreen;
 PImage[] Enemyleft = new PImage[10], Enemyright = new PImage[10], Playerleft = new PImage[10], Playerright = new PImage[10];
 PImage[] Coin = new PImage[10];
 PImage monsterstun;
@@ -41,7 +41,6 @@ int anitime = 0;
 int statusbarh = 40;
 int startgametime, mins;
 int Enemy_num = 0, Coin_num = 0;
-int settingsButtonX, settingsButtonY, settingsButtonWidth, settingsButtonHeight;
 
 int movex[] = { - 1,0,1,0};
 int movey[] = {0,1,0, -1};
@@ -49,6 +48,7 @@ int movey[] = {0,1,0, -1};
 Button aboutButton;
 Button volumeButton;
 Button quitButton;
+Button settingsButton;
 
 PImage startButton;
 int level = 0;
@@ -208,8 +208,9 @@ void setup() {
     
     
     aboutButton = new Button(100, 730, 0.8, "about-1.png", "about-2.png", "about-3.png");
-    volumeButton = new Button(100, 50, 0.8, "mute-1.png", "mute-2.png", "mute-3.png");
-    quitButton = new Button(730, 730, 0.8, "quit-1.png", "quit-2.png", "quit-3.png");
+    volumeButton = new Button(730, 730, 0.8, "mute-1.png", "mute-2.png", "mute-3.png");
+    quitButton = new Button(850, 50, 0.8, "quit-1.png", "quit-2.png", "quit-3.png");
+    settingsButton = new Button(850, 730, 0.8, "settings-1.png", "settings-2.png", "settings-3.png");
     
     minim = new Minim(this);
     bgmPlayer = minim.loadFile("BGM.mp3");
@@ -217,8 +218,6 @@ void setup() {
     bgmPlayer.loop();
     coinplayer = minim.loadFile("gold_coin.wav");
     
-    settingsButton = loadImage("setting.png");
-    settingsButton.resize(110, 55); // Adjust size as needed
     statusbar.resize(1000, 40);
     size(1000, 840);
     beginscr.resize(1000, 840);
@@ -254,10 +253,6 @@ void mouseClicked() {
             }
         }
         
-        if (mouseX > 730 && mouseX < 840 && mouseY > 695 && mouseY < 750 + statusbarh) {
-            if (showinstru == false) showinstru = true; // Open settings - implement settings functionality
-            else showinstru = false;
-        }
         if (mouseX > width / 3 - 20 && mouseX < width / 2 + 180 && 
             mouseY > height - 110 && mouseY < height - 50) {
             // If clicked on the start button, let the user choose a level
@@ -288,13 +283,14 @@ void draw() {
         if (level == 0) {
             background(beginscr);
             
-            image(settingsButton, 730, 695 + statusbarh);
             aboutButton.update();
             aboutButton.display();
             volumeButton.update();
             volumeButton.display();
             quitButton.update();
             quitButton.display();
+            settingsButton.update();
+            settingsButton.display();
             
             if (showlevel) {
                 image(levelSelectImage, 200, 75);
@@ -582,9 +578,15 @@ void mousePressed() {
     if (quitButton.mouseClicked()) {
         exit();
     }
+    if (settingsButton.mouseClicked()) {
+        if (showinstru == false) showinstru = true; // Open settings - implement settings functionality
+        else showinstru = false;
+    }
 }
 
 void mouseReleased() {
     aboutButton.reset();
     volumeButton.reset();
+    quitButton.reset();
+    settingsButton.reset();
 }
