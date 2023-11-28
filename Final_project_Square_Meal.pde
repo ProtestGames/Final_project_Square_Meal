@@ -9,7 +9,7 @@ AudioPlayer bgmPlayer, coinplayer;
 PImage stoneblock, brickblock, back_image;
 PImage beginscr, statusbar;
 PImage levelSelectImage, instrucImage;
-PImage settingsButton, quitButton, levelSelectScreen;
+PImage settingsButton, levelSelectScreen;
 PImage[] Enemyleft = new PImage[10], Enemyright = new PImage[10], Playerleft = new PImage[10], Playerright = new PImage[10];
 PImage[] Coin = new PImage[10];
 PImage monsterstun;
@@ -42,13 +42,13 @@ int statusbarh = 40;
 int startgametime, mins;
 int Enemy_num = 0, Coin_num = 0;
 int settingsButtonX, settingsButtonY, settingsButtonWidth, settingsButtonHeight;
-int quitButtonX, quitButtonY, quitButtonWidth, quitButtonHeight;
 
 int movex[] = { - 1,0,1,0};
 int movey[] = {0,1,0, -1};
 
 Button aboutButton;
 Button volumeButton;
+Button quitButton;
 
 PImage startButton;
 int level = 0;
@@ -206,18 +206,19 @@ void setup() {
         circleColors[i] = color(random(255), random(255), random(255), 200);
     }
     
-    minim = new Minim(this);
-    bgmPlayer = minim.loadFile("BGM.mp3");
+    
     aboutButton = new Button(100, 730, 0.8, "about-1.png", "about-2.png", "about-3.png");
     volumeButton = new Button(100, 50, 0.8, "mute-1.png", "mute-2.png", "mute-3.png");
+    quitButton = new Button(730, 730, 0.8, "quit-1.png", "quit-2.png", "quit-3.png");
+    
+    minim = new Minim(this);
+    bgmPlayer = minim.loadFile("BGM.mp3");
     bgmPlayer.setGain( -30);
     bgmPlayer.loop();
     coinplayer = minim.loadFile("gold_coin.wav");
     
     settingsButton = loadImage("setting.png");
     settingsButton.resize(110, 55); // Adjust size as needed
-    quitButton = loadImage("quit.jpg");
-    quitButton.resize(100, 50); // Adjust size as needed
     statusbar.resize(1000, 40);
     size(1000, 840);
     beginscr.resize(1000, 840);
@@ -253,10 +254,6 @@ void mouseClicked() {
             }
         }
         
-        // Check if the Quit button is clicked
-        if (mouseX > 860 && mouseX < 960 && mouseY > 700 && mouseY < 750 + statusbarh) {
-            exit(); // Quit the game
-        }
         if (mouseX > 730 && mouseX < 840 && mouseY > 695 && mouseY < 750 + statusbarh) {
             if (showinstru == false) showinstru = true; // Open settings - implement settings functionality
             else showinstru = false;
@@ -292,11 +289,13 @@ void draw() {
             background(beginscr);
             
             image(settingsButton, 730, 695 + statusbarh);
-            image(quitButton, 860, 700 + statusbarh);
             aboutButton.update();
             aboutButton.display();
             volumeButton.update();
             volumeButton.display();
+            quitButton.update();
+            quitButton.display();
+            
             if (showlevel) {
                 image(levelSelectImage, 200, 75);
             }
@@ -568,7 +567,6 @@ class Button {
 
 void mousePressed() {
     if (aboutButton.mouseClicked()) {
-        // Handle button click event
         println("about");
     }
     if (volumeButton.mouseClicked()) {
@@ -580,6 +578,9 @@ void mousePressed() {
             bgmPlayer.setGain( -30);
         }
         isMuted = !isMuted;
+    }
+    if (quitButton.mouseClicked()) {
+        exit();
     }
 }
 
