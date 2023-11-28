@@ -322,12 +322,13 @@ void draw() {
                         // Add drawing logic for other entities
                     }
                 }
-                
+                levelPassed = true;
+                passTime = millis();
                 for (Enemy enemy : enemies) {
                     if (!enemy.checkexist()) {
                         continue;
                     }
-                    
+                    levelPassed = false;
                     enemy.checkBoundary();
                     enemy.move();
                     enemy.checkCollisionWithBlock();
