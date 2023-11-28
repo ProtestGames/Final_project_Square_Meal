@@ -43,9 +43,9 @@ void drawCircles() {
 
 void displayTitle() {
   fill(255);
-  textSize(64);
   textFont(oldenglish);
-  text("Circle Meal", width / 2, height / 2-50);
+  textSize(80);
+  text("Square Meal", width / 2, height / 2-80);
   textSize(48);
   text("Presented By Group 1:\nGroup Leader: Buffett",width / 2, height / 2+30);
   if(frameCount>500){titledone=true;}
