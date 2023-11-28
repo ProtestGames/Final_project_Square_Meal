@@ -557,7 +557,7 @@ void draw() {
               image(brickblock,i*gridSize,j*gridSize, gridSize*1, gridSize*1.7);
             }
             if(board[i][j]==6){
-              image(Coin[Coin_num],i*gridSize + gridSize/2, j*gridSize + gridSize/2, gridSize, gridSize);
+              image(Coin[Coin_num],i*gridSize , j*gridSize , gridSize, gridSize);
             }
             // ... Add drawing logic for other entities
           }
