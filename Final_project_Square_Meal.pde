@@ -10,7 +10,8 @@ PImage stoneblock,brickblock,back_image;
 PImage beginscr,statusbar;
 PImage levelSelectImage,instrucImage;
 PImage settingsButton, quitButton, levelSelectScreen;
-PImage[] Enemyleft = new PImage[10],Enemyright = new PImage[10];
+PImage[] Enemyleft = new PImage[10],Enemyright = new PImage[10],Playerleft = new PImage[10],Playerright = new PImage[10];
+PImage[] Coin = new PImage[10];
 PImage monsterstun;
 PImage monsterstun_1;
 boolean isPlaying = true;
@@ -36,7 +37,7 @@ int passTime = -1; // -1 indicates that the level has not been passed yet
 int anitime=0;
 int statusbarh=40;
 int startgametime,mins;
-int Enemy_num=0;
+int Enemy_num=0,Coin_num=0;
 int settingsButtonX, settingsButtonY, settingsButtonWidth, settingsButtonHeight;
 int quitButtonX, quitButtonY, quitButtonWidth, quitButtonHeight;
 
@@ -403,6 +404,21 @@ void setup() {
     Enemyleft[i].resize(gridSize,gridSize);
     Enemyright[i].resize(gridSize,gridSize);
   }
+  for(int i=0;i<7;i++){
+    String s = "player"+str(i+1);
+    String s2 = s;
+    s+=".png";
+    s2+="-1.png";
+    Playerleft[i] = loadImage(s);
+    Playerright[i] = loadImage(s2);
+    Playerleft[i].resize(gridSize,gridSize);
+    Playerright[i].resize(gridSize,gridSize);
+  }
+  for(int i=0;i<8;i++){
+    String s = "Coin_"+str(i+1)+".png";
+    Coin[i] = loadImage(s);
+    Coin[i].resize(gridSize,gridSize);
+  }
   textAlign(CENTER, CENTER);
   textSize(64);
   // Initialize circles with random positions and colors
@@ -498,6 +514,8 @@ void draw() {
     anitime=millis();
     Enemy_num++;
     Enemy_num%=7;
+    Coin_num++;
+    Coin_num%=8;
   }
   if (!animationDone) {
     drawCircles();
@@ -529,11 +547,16 @@ void draw() {
               rect(i*gridSize, j*gridSize, gridSize, gridSize);*/
             }
             if (board[i][j] == 2) {
-              fill(0, 255, 0); // green for player
-              ellipse(i*gridSize + gridSize/2, j*gridSize + gridSize/2, gridSize, gridSize);
+              //fill(0, 255, 0); // green for player
+              //ellipse(i*gridSize + gridSize/2, j*gridSize + gridSize/2, gridSize, gridSize);
+              if(dir==2||dir==3)image(Playerleft[Enemy_num],i*gridSize + gridSize/2, j*gridSize + gridSize/2, gridSize, gridSize);
+              else image(Playerright[Enemy_num],i*gridSize + gridSize/2, j*gridSize + gridSize/2, gridSize, gridSize);
             }
             if(board[i][j]==5){ //block 2
               image(brickblock,i*gridSize,j*gridSize, gridSize*1, gridSize*1.7);
+            }
+            if(board[i][j]==6){
+              image(Coin[Coin_num],i*gridSize + gridSize/2, j*gridSize + gridSize/2, gridSize, gridSize);
             }
             // ... Add drawing logic for other entities
           }
