@@ -37,7 +37,7 @@ int passTime = -1; // -1 indicates that the level has not been passed yet
 int anitime=0;
 int statusbarh=40;
 int startgametime,mins;
-int Enemy_num=0;
+int Enemy_num=0,Coin_num=0;
 int settingsButtonX, settingsButtonY, settingsButtonWidth, settingsButtonHeight;
 int quitButtonX, quitButtonY, quitButtonWidth, quitButtonHeight;
 
@@ -514,6 +514,8 @@ void draw() {
     anitime=millis();
     Enemy_num++;
     Enemy_num%=7;
+    Coin_num++;
+    Coin_num%=8;
   }
   if (!animationDone) {
     drawCircles();
@@ -555,7 +557,7 @@ void draw() {
               image(brickblock,i*gridSize,j*gridSize, gridSize*1, gridSize*1.7);
             }
             if(board[i][j]==6){
-              image(coin,i*gridSize,j*gridSize
+              image(coin[Coin_num],i*gridSize,j*gridSize);
             }
             // ... Add drawing logic for other entities
           }
