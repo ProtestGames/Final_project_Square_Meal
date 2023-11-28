@@ -208,6 +208,7 @@ void setup() {
     
     minim = new Minim(this);
     player = minim.loadFile("BGM.mp3");
+    player.setGain( -30);
     player.loop();
     coinplayer = minim.loadFile("gold_coin.wav");
     
@@ -273,7 +274,7 @@ void mouseClicked() {
                 player.setGain( -80);
                 isMuted = true;
             } else {
-                player.setGain(0);
+                player.setGain( -30);
                 player.setBalance(0);
                 isMuted = false;
             }
