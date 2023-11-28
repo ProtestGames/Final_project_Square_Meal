@@ -4,7 +4,7 @@ import processing.video.*;
 import ddf.minim.*;
 //sound parts
 Minim minim;
-AudioPlayer player;
+AudioPlayer player,coinplayer;
 PImage muteIcon,unmuteIcon;
 PImage stoneblock,brickblock,back_image;
 PImage beginscr,statusbar;
@@ -432,7 +432,7 @@ void setup() {
   minim = new Minim(this);
   player = minim.loadFile("BGM.mp3");
   player.loop();
-
+  coinplayer = minim.loadFile("gold_coin.wav");
   //settingsButton = loadImage("settingsButton.jpg"); // Replace with your settings button image file
   quitButton = loadImage("quit.jpg"); // Replace with your quit button image file
   settingsButton = loadImage("setting.png");
@@ -662,12 +662,32 @@ void keyPressed() {
   else if (keyCode == LEFT  && dir!=3){dir=3;facing=3;}
   else{
     if (keyCode == UP && playerY > 0 && board[playerCellX][playerCellY - 1] != 1&& board[playerCellX][playerCellY - 1] != 5) {
+      if(board[playerCellX][playerCellY-1]==6){
+        board[playerCellX][playerCellY-1]=0;
+        overallscore +=10; 
+        coinplayer.play();
+      }
       playerY -= gridSize;dir=0;}
     if (keyCode == DOWN && playerY < height - gridSize-statusbarh && board[playerCellX][playerCellY + 1] != 1 && board[playerCellX][playerCellY + 1] != 5) {
+      if(board[playerCellX][playerCellY+1]==6){
+        board[playerCellX][playerCellY+1]=0;
+        overallscore+=10;
+        coinplayer.play();
+      }
       playerY += gridSize;dir=2;}
     if (keyCode == LEFT && playerX > 0 && board[playerCellX - 1][playerCellY] != 1 && board[playerCellX - 1][playerCellY] != 5) {
+      if(board[playerCellX-1][playerCellY]==6){
+        board[playerCellX-1][playerCellY]=0;
+        overallscore+=10;
+        coinplayer.play();
+      }
       playerX -= gridSize;dir=3;facing=3;}
     if (keyCode == RIGHT && playerX < width - gridSize && board[playerCellX + 1][playerCellY] != 1 && board[playerCellX + 1][playerCellY] != 5) {
+      if(board[playerCellX+1][playerCellY]==6){
+        board[playerCellX+1][playerCellY]=0;
+        overallscore+=10;
+        coinplayer.play();
+      }
       playerX += gridSize;dir=1;facing=1;}
   }
   //println("Key pressed: " + dir);
