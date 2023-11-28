@@ -10,6 +10,7 @@ PImage stoneblock,brickblock,back_image;
 PImage beginscr,statusbar;
 PImage levelSelectImage,instrucImage;
 PImage settingsButton, quitButton, levelSelectScreen;
+PImage[] coin = new PImage[10];
 PImage[] Enemyleft = new PImage[10],Enemyright = new PImage[10],Playerleft = new PImage[10],Playerright = new PImage[10];
 PImage monsterstun;
 PImage monsterstun_1;
@@ -413,6 +414,11 @@ void setup() {
     Playerleft[i].resize(gridSize,gridSize);
     Playerright[i].resize(gridSize,gridSize);
   }
+  for(int i=0;i<8;i++){
+    String s = "Coin_"+str(i+1)+".png";
+    coin[i]=loadImage(s);
+    coin[i].resize(gridSize,gridSize);
+  }
   textAlign(CENTER, CENTER);
   textSize(64);
   // Initialize circles with random positions and colors
@@ -547,6 +553,9 @@ void draw() {
             }
             if(board[i][j]==5){ //block 2
               image(brickblock,i*gridSize,j*gridSize, gridSize*1, gridSize*1.7);
+            }
+            if(board[i][j]==6){
+              image(coin,i*gridSize,j*gridSize
             }
             // ... Add drawing logic for other entities
           }
