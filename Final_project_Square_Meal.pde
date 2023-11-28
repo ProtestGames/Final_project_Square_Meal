@@ -25,6 +25,7 @@ boolean isGameOver = false;
 int[][] board; // 0: empty, 1: block, 2: player, 3: enemy
 int playerX, playerY;
 int dir;
+int facing = 1;
 Boolean hasBlock=false;
 Boolean showlevel=false;
 boolean isBlockMoving = false;
@@ -656,18 +657,18 @@ void keyPressed() {
   int playerCellX = playerX / gridSize;
   int playerCellY = playerY / gridSize;
   if (keyCode == UP &&dir!=0)dir=0;
-  else if (keyCode == RIGHT && dir!=1)dir=1;
+  else if (keyCode == RIGHT && dir!=1){dir=1;facing=1;}
   else if (keyCode == DOWN  && dir!=2)dir=2;
-  else if (keyCode == LEFT  && dir!=3)dir=3;
+  else if (keyCode == LEFT  && dir!=3){dir=3;facing=3;}
   else{
     if (keyCode == UP && playerY > 0 && board[playerCellX][playerCellY - 1] != 1&& board[playerCellX][playerCellY - 1] != 5) {
       playerY -= gridSize;dir=0;}
     if (keyCode == DOWN && playerY < height - gridSize-statusbarh && board[playerCellX][playerCellY + 1] != 1 && board[playerCellX][playerCellY + 1] != 5) {
       playerY += gridSize;dir=2;}
     if (keyCode == LEFT && playerX > 0 && board[playerCellX - 1][playerCellY] != 1 && board[playerCellX - 1][playerCellY] != 5) {
-      playerX -= gridSize;dir=3;}
+      playerX -= gridSize;dir=3;facing=3;}
     if (keyCode == RIGHT && playerX < width - gridSize && board[playerCellX + 1][playerCellY] != 1 && board[playerCellX + 1][playerCellY] != 5) {
-      playerX += gridSize;dir=1;}
+      playerX += gridSize;dir=1;facing=1;}
   }
   //println("Key pressed: " + dir);
   if (keyCode == 32||key==' ' ) {
