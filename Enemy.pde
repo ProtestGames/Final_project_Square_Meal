@@ -28,6 +28,9 @@ class Enemy {
     boolean checkexist(){
       return this.exist;
     }
+    boolean checkstun(){
+      return this.isStunned;
+    }
     void move() {
         if (!isStunned) {
             this.x += this.direction[0] * enemySpeed;

@@ -478,7 +478,7 @@ void keyPressed() {
                         int mx = Math.round(monster.x / gridSize);
                         int my = Math.round(monster.y / gridSize);
                         
-                        if (mx == checkX && my == checkY && monster.exist) {
+                        if (mx == checkX && my == checkY && monster.exist&&monster.checkstun()) {
                             overallscore += monster.getscore();
                             swallowplayer.rewind();
                             swallowplayer.play();
