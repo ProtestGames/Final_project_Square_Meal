@@ -224,12 +224,12 @@ void setup() {
     
     minim = new Minim(this);
     bgmPlayer = minim.loadFile("BGM.mp3");
-    bgmPlayer.setGain( -15);
+    bgmPlayer.setGain( -20);
     bgmPlayer.loop();
     coinplayer = minim.loadFile("gold_coin.wav");
-    coinplayer.setGain(-15);
+    coinplayer.setGain(-20);
     swallowplayer = minim.loadFile("Swallow.mp3");
-    swallowplayer.setGain(50);
+    swallowplayer.setGain(90);
     
     statusbar.resize(1000, 40);
     size(1000, 840);
