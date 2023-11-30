@@ -146,12 +146,13 @@ class Enemy {
 
 class Mirage extends Enemy {
     private boolean isHidden = false;
-    private int hideCooldown = int(random(100,400));
+    private int hideCooldown = int(random(2,6));
     private int hideTimestamp = 0;
     private int lastHideTimestamp = 0;
     private int MAX_HIDE_DURATION = 20;
+    private int hidetime = int(random(2,5));
     private float HIDE_CHANCE = 4.34;
-    
+
     //default properties
     private int enemex, enemey;
     private int lastx, lasty;
@@ -162,19 +163,26 @@ class Mirage extends Enemy {
     
     public void display() {
         if (this.isStunned) {
-            fill(140, 84, 4); // Dark red for stunned enemy
-        } else {
-            fill(247, 165, 49); // Red for enemy
+          if(this.direction[0]==-1)
+            image(miragestun,this.x,this.y,miragestun.width, miragestun.height);
+          else
+            image(miragestun_1,this.x,this.y,miragestun_1.width, miragestun_1.height);
+        } 
+        else {
+          if(!this.isHidden){
+            if(this.direction[0]==-1)
+              image(mirleft[mirage_num],this.x,this.y,mirleft[mirage_num].width, mirleft[mirage_num].height);
+            else
+              image(mirright[mirage_num],this.x,this.y,mirright[mirage_num].width, mirright[mirage_num].height);
+          }
+          else
+            image(stoneblock,this.x,this.y,gridSize,gridSize*1.7);
         }
-        if(!this.isHidden)
-          ellipse(this.x + 20, this.y + 20, gridSize, gridSize);
-        else
-          image(stoneblock,this.x,this.y,gridSize,gridSize*1.7);
     }
 
     private boolean checkHideStatus() {
         if (this.isHidden) {
-           if (getTimestamp() > this.hideTimestamp) {
+           if (getTimestamp() - this.hideTimestamp>hidetime) {
                 this.isHidden = false;
                 display();
                 return false;
@@ -183,6 +191,16 @@ class Mirage extends Enemy {
         }
         
         return false;
+    }
+    public void checkCollisionWithBlock() {
+      if (isBlockMoving && checkAABBCollision(this.x, this.y, gridSize, gridSize, movingBlockX, movingBlockY, gridSize, gridSize)) {
+        if(!this.isHidden)
+          this.isStunned = true;
+        else{
+          isBlockMoving = false;
+          board[enemex][enemey] = 1;
+        }
+      }
     }
 
     public void move() {
@@ -193,9 +211,9 @@ class Mirage extends Enemy {
         if (isStunned) {
           return;
         }
-        if(!this.isHidden)
+        if(!this.isHidden&&millis()-this.hideTimestamp>3)
           hide();
-        unhide();
+        //unhide();
         this.x += this.direction[0] * enemySpeed;
         this.y += this.direction[1] * enemySpeed;
         enemex = int(this.x / gridSize);
@@ -210,13 +228,15 @@ class Mirage extends Enemy {
     }
 
     private void hide() {
+        println("try to hide");
         if (this.isHidden) {
             return;
         }
         if (random(1,6) > this.HIDE_CHANCE) {
             return;
         }
-        if ((getTimestamp() - this.lastHideTimestamp) < this.hideCooldown+10) {
+        if ((getTimestamp() - this.lastHideTimestamp) < this.hideCooldown) {
+            println("current "+getTimestamp() +" lasthide "+this.lastHideTimestamp);
             return;
         }
         //replace self with stone block here
@@ -227,13 +247,16 @@ class Mirage extends Enemy {
 
     private void unhide() {
         if (!isHidden||getTimestamp()-this.hideTimestamp<2) {
+          println("ishiden : "+isHidden);
           println(getTimestamp()+" - "+this.hideTimestamp);
-            return;
+          return;
         }
-        this.lastHideTimestamp = getTimestamp();
-        this.isHidden = false;
-        println("UNHIDE!");
-        display();
+        else{
+          this.lastHideTimestamp = getTimestamp();
+          this.isHidden = false;
+          println("UNHIDE!");
+          display();
         //deletes the stone block here
+        }
     }
 }

@@ -10,10 +10,10 @@ PImage stoneblock, brickblock, back_image;
 PImage beginscr, statusbar;
 PImage levelSelectImage, instrucImage;
 PImage levelSelectScreen;
-PImage[] Enemyleft = new PImage[10], Enemyright = new PImage[10], Playerleft = new PImage[10], Playerright = new PImage[10];
+PImage[] Enemyleft = new PImage[10], Enemyright = new PImage[10], Playerleft = new PImage[10], Playerright = new PImage[10],mirleft = new PImage[6], mirright = new PImage[6];
 PImage[] Coin = new PImage[10];
-PImage monsterstun;
-PImage monsterstun_1;
+PImage monsterstun,miragestun;
+PImage monsterstun_1,miragestun_1;
 
 // Game state variables
 boolean isPlaying = true;
@@ -40,7 +40,7 @@ int passTime = -1; // -1 indicates that the level has not been passed yet
 int anitime = 0;
 int statusbarh = 40;
 int startgametime, mins;
-int Enemy_num = 0, Coin_num = 0;
+int Enemy_num = 0, Coin_num = 0, mirage_num=0;
 
 int movex[] = { - 1,0,1,0};
 int movey[] = {0,1,0, -1};
@@ -69,7 +69,7 @@ boolean checkAABBCollision(float x1, float y1, float w1, float h1, float x2, flo
 }
 
 int getTimestamp() {
-    return(millis() % 1000);
+    return(millis() / 1000);
 }
 
 void loadlevel(int level) {
@@ -157,6 +157,11 @@ void setup() {
     levelSelectImage.resize(600, 500); // Adjust size as needed
     back_image = loadImage("background.jpg");
     back_image.resize(1000, 840);
+    miragestun = loadImage("monster_mirage_stunned.png");
+    miragestun_1 = loadImage("monster_mirage_stunned_1.png");
+    miragestun.resize(gridSize, gridSize);
+    miragestun_1.resize(gridSize, gridSize);
+
     monsterstun = loadImage("monster_stunned.png");
     monsterstun_1 = loadImage("monster_stunned_1.png");
     monsterstun.resize(gridSize, gridSize);
@@ -171,6 +176,16 @@ void setup() {
         Enemyright[i] = loadImage(s2);
         Enemyleft[i].resize(gridSize, gridSize);
         Enemyright[i].resize(gridSize, gridSize);
+    }
+    for (int i = 0; i < 6; i++) {
+        String s = "monster_mirage" + str(i + 1);
+        String s2 = s;
+        s += ".png";
+        s2 += "_1.png";
+        mirleft[i] = loadImage(s);
+        mirright[i] = loadImage(s2);
+        mirleft[i].resize(gridSize, gridSize);
+        mirright[i].resize(gridSize, gridSize);
     }
     
     for (int i = 0; i < 7; i++) {
@@ -209,11 +224,12 @@ void setup() {
     
     minim = new Minim(this);
     bgmPlayer = minim.loadFile("BGM.mp3");
-    bgmPlayer.setGain( -30);
+    bgmPlayer.setGain( -15);
     bgmPlayer.loop();
     coinplayer = minim.loadFile("gold_coin.wav");
+    coinplayer.setGain(-15);
     swallowplayer = minim.loadFile("Swallow.mp3");
-    swallowplayer.setGain(30);
+    swallowplayer.setGain(50);
     
     statusbar.resize(1000, 40);
     size(1000, 840);
@@ -261,6 +277,8 @@ void draw() {
         Enemy_num %= 7;
         Coin_num++;
         Coin_num %= 8;
+        mirage_num++;
+        mirage_num %= 6;
     }
     
     if (!animationDone) {
