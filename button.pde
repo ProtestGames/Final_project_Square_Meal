@@ -67,7 +67,7 @@ class Button {
 
 void mousePressed() {
     if (aboutButton.mouseClicked()) {
-        println("about");
+        showAbout = !showAbout;
     }
     if (volumeButton.mouseClicked()) {
         if (!isMuted) {

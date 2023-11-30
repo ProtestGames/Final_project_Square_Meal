@@ -8,7 +8,7 @@ Minim minim;
 AudioPlayer bgmPlayer, coinplayer,swallowplayer;
 PImage stoneblock, brickblock, back_image;
 PImage beginscr, statusbar;
-PImage levelSelectImage, instrucImage;
+PImage levelSelectImage, instrucImage,aboutUsImage;
 PImage levelSelectScreen;
 PImage[] Enemyleft = new PImage[10], Enemyright = new PImage[10], Playerleft = new PImage[10], Playerright = new PImage[10],mirleft = new PImage[6], mirright = new PImage[6];
 PImage[] Coin = new PImage[10];
@@ -21,6 +21,7 @@ boolean isMuted = false;
 int overallscore = 0;
 boolean levelPassed = false;
 boolean showinstru = false;
+boolean showAbout = false;
 boolean pass = false;
 int gridSize = 40;
 boolean isGameOver = false;
@@ -40,7 +41,7 @@ int passTime = -1; // -1 indicates that the level has not been passed yet
 int anitime = 0;
 int statusbarh = 40;
 int startgametime, mins;
-int Enemy_num = 0, Coin_num = 0, mirage_num=0;
+int Enemy_num = 0, Coin_num = 0, mirage_num = 0;
 
 int movex[] = { - 1,0,1,0};
 int movey[] = {0,1,0, -1};
@@ -148,6 +149,7 @@ void setup() {
     oldenglish = loadFont("BerlinSansFB-Bold-48.vlw");
     instrucImage = loadImage("Instructions.png");
     instrucImage.resize(600, 600);
+    aboutUsImage = loadImage("about-us.png");
     beginscr = loadImage("Begin_Screen.jpg");
     stoneblock = loadImage("block2.png");
     brickblock = loadImage("block1.png");
@@ -161,7 +163,7 @@ void setup() {
     miragestun_1 = loadImage("monster_mirage_stunned_1.png");
     miragestun.resize(gridSize, gridSize);
     miragestun_1.resize(gridSize, gridSize);
-
+    
     monsterstun = loadImage("monster_stunned.png");
     monsterstun_1 = loadImage("monster_stunned_1.png");
     monsterstun.resize(gridSize, gridSize);
@@ -227,7 +229,7 @@ void setup() {
     bgmPlayer.setGain( -20);
     bgmPlayer.loop();
     coinplayer = minim.loadFile("gold_coin.wav");
-    coinplayer.setGain(-20);
+    coinplayer.setGain( -20);
     swallowplayer = minim.loadFile("Swallow.mp3");
     swallowplayer.setGain(90);
     
@@ -306,6 +308,10 @@ void draw() {
             
             if (showinstru) {
                 image(instrucImage, 200, 75);
+            }
+            
+            if (showAbout) {
+                image(aboutUsImage, 200, 200);
             }
         } else if (level >= 1 && level <= 6) {
             if (!levelPassed && !isGameOver) {
@@ -496,7 +502,7 @@ void keyPressed() {
                         int mx = Math.round(monster.x / gridSize);
                         int my = Math.round(monster.y / gridSize);
                         
-                        if (mx == checkX && my == checkY && monster.exist&&monster.checkstun()) {
+                        if (mx == checkX && my == checkY && monster.exist &&  monster.checkstun()) {
                             overallscore += monster.getscore();
                             swallowplayer.rewind();
                             swallowplayer.play();
