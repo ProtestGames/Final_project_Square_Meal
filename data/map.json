@@ -27,7 +27,7 @@
     "playerY": 280,
     "enemies": [
       {
-        "x": 240,
+        "x": 200,
         "y": 440,
         "speed": 2,
         "direction": [1, 0],
