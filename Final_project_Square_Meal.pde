@@ -85,7 +85,7 @@ void loadlevel(int level) {
         println("Invalid level " + level);
         return;
     } else {
-        println("try to load level" + level);
+        println("Attempting to load level" + level);
     }
     
     //Get the board data
@@ -129,7 +129,7 @@ void loadlevel(int level) {
         }
     }
     
-    println("loaded level successfully");
+    println("Level loaded successfully");
     startgametime = millis();
     mins = 0;
 }
@@ -384,7 +384,7 @@ void draw() {
                 fill(255);
                 textSize(48);
                 textAlign(CENTER, CENTER);
-                text("Game Over you lose level " + level, width / 2, height / 2);
+                text("Game Over you've lost level " + level, width / 2, height / 2);
                 
                 if (millis() - passTime > 3000) {
                     levelPassed = false;
@@ -396,7 +396,7 @@ void draw() {
                 fill(255);
                 textSize(48);
                 textAlign(CENTER, CENTER);
-                text("Pass level " + level, width / 2, height / 2);
+                text("Cleared level " + level, width / 2, height / 2);
                 text("Your score is " + overallscore, width / 2, height / 2 + 50);
                 
                 if (millis() - passTime > 3000) {
