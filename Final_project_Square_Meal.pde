@@ -107,13 +107,8 @@ void loadlevel(int level) {
     enemies.clear();
     for (int i = 0; i < enemiesData.size(); i++) {
         JSONObject enemyData = enemiesData.getJSONObject(i);
-        String enemyType;
-        if (enemyData.isNull("type")) {
-            enemyType = "default";
-        } else {
-            enemyType = enemyData.getString("type");
-        }
-        
+        String enemyType = enemyData.isNull("type") ? "default" : enemyData.getStirng("type");
+        Stringl blockType = enemyData.isNull("blockType") ? "stone" : enemyData.getString("blockType");
         float x = enemyData.getFloat("x");
         float y = enemyData.getFloat("y");
         int spd = enemyData.getInt("speed");
@@ -124,7 +119,7 @@ void loadlevel(int level) {
                 break;
             
             case "mirage":
-                enemies.add(new Mirage(x, y, spd, sco));
+                enemies.add(new Mirage(x, y, spd, sco, blockType));
                 break;
         }
     }
