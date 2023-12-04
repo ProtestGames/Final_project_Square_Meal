@@ -145,39 +145,45 @@ class Enemy {
 }
 
 class Mirage extends Enemy {
+    private float HIDE_CHANCE = 4.34;
+
     private boolean isHidden = false;
     private int hideCooldown = int(random(2,6));
     private int hideTimestamp = 0;
     private int lastHideTimestamp = 0;
     private int MAX_HIDE_DURATION = 20;
     private int hidetime = int(random(2,5));
-    private float HIDE_CHANCE = 4.34;
+    private String blockType;
 
     //default properties
     private int enemex, enemey;
     private int lastx, lasty;
     
-    Mirage(float x, float y, int speed, int score) {
+    Mirage(float x, float y, int speed, int score, String blockType) {
         super(x, y, speed, score);
+        switch(blockType) {
+            case "brick":
+                this.blockType = brickblock;
+                break;
+
+            case "stone":
+            default:
+                this.blockType = stoneblock;
+                break;
+        }
     }
     
     public void display() {
         if (this.isStunned) {
-          if(this.direction[0]==-1)
-            image(miragestun,this.x,this.y,miragestun.width, miragestun.height);
-          else
-            image(miragestun_1,this.x,this.y,miragestun_1.width, miragestun_1.height);
+          PImage stunAnimation = this.direction[0] == -1 ? miragestun : miragestun_1;
+          image(stunAnimation, this.x, this.y, stunAnimation.width, stunAnimation.height);
         } 
-        else {
-          if(!this.isHidden){
-            if(this.direction[0]==-1)
-              image(mirleft[mirage_num],this.x,this.y,mirleft[mirage_num].width, mirleft[mirage_num].height);
-            else
-              image(mirright[mirage_num],this.x,this.y,mirright[mirage_num].width, mirright[mirage_num].height);
-          }
-          else
-            image(stoneblock,this.x,this.y,gridSize,gridSize*1.7);
+        if(!this.isHidden){
+          PImage mirageAnimation = this.direction[0] == -1 ? mirleft[mirage_num] : mirright[mirage_num];
+          image(mirageAnimation, this.x, this.y, mirageAnimation.width, mirageAnimation.height);
+          return;
         }
+        image(this.blockType == "stone" ? stoneblock : brickblock, this.x, this.y, gridSize, gridSize * 1.7);
     }
 
     private boolean checkHideStatus() {
@@ -242,6 +248,7 @@ class Mirage extends Enemy {
         //replace self with stone block here
         this.isHidden = true;
         this.hideTimestamp = getTimestamp();
+        display();
         println("HIDE!");
     }
 
