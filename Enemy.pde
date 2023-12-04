@@ -176,6 +176,7 @@ class Mirage extends Enemy {
         if (this.isStunned) {
           PImage stunAnimation = this.direction[0] == -1 ? miragestun : miragestun_1;
           image(stunAnimation, this.x, this.y, stunAnimation.width, stunAnimation.height);
+          return;
         } 
         if(!this.isHidden){
           PImage mirageAnimation = this.direction[0] == -1 ? mirleft[mirage_num] : mirright[mirage_num];
