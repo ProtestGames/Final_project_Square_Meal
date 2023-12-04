@@ -44,7 +44,6 @@ class Enemy {
     }
     boolean checkCollisionWithPlayer() {
       if (!this.isStunned) {
-        //println("thisx,thisy"+this.x+" "+this.y+"plx,ply"+ playerX+" "+ playerY);
         return checkAABBCollision(this.x, this.y, gridSize, gridSize, playerX, playerY, gridSize, gridSize);
       }
       return false;
@@ -234,7 +233,6 @@ class Mirage extends Enemy {
     }
 
     private void hide() {
-        println("try to hide");
         if (this.isHidden) {
             return;
         }
@@ -242,26 +240,21 @@ class Mirage extends Enemy {
             return;
         }
         if ((getTimestamp() - this.lastHideTimestamp) < this.hideCooldown) {
-            println("current "+getTimestamp() +" lasthide "+this.lastHideTimestamp);
             return;
         }
         //replace self with stone block here
         this.isHidden = true;
         this.hideTimestamp = getTimestamp();
         display();
-        println("HIDE!");
     }
 
     private void unhide() {
         if (!isHidden||getTimestamp()-this.hideTimestamp<2) {
-          println("ishiden : "+isHidden);
-          println(getTimestamp()+" - "+this.hideTimestamp);
           return;
         }
         else{
           this.lastHideTimestamp = getTimestamp();
           this.isHidden = false;
-          println("UNHIDE!");
           display();
         //deletes the stone block here
         }
