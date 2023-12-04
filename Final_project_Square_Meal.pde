@@ -3,6 +3,8 @@ import VLCJVideo.*;
 import processing.video.*;
 import ddf.minim.*;
 
+boolean DEV_MODE = true;
+
 // Sound parts
 Minim minim;
 AudioPlayer bgmPlayer, coinplayer,swallowplayer;
@@ -84,7 +86,7 @@ void loadlevel(int level) {
         println("Invalid level " + level);
         return;
     }
-    JSONObject json = loadJSONObject("map.json"); // Load the JSON file
+    JSONObject json = DEV_MODE ? loadJSONObject("dev.json") : loadJSONObject("map.json"); // Load the JSON file
     JSONObject levelData = json.getJSONObject("level" + str(level)); // Get data for level1
     if (levelData == null) {
         println("Invalid level " + level);
@@ -112,8 +114,8 @@ void loadlevel(int level) {
     enemies.clear();
     for (int i = 0; i < enemiesData.size(); i++) {
         JSONObject enemyData = enemiesData.getJSONObject(i);
-        String enemyType = enemyData.isNull("type") ? "default" : enemyData.getStirng("type");
-        Stringl blockType = enemyData.isNull("blockType") ? "stone" : enemyData.getString("blockType");
+        String enemyType = enemyData.isNull("type") ? "default" : enemyData.getString("type");
+        String blockType = enemyData.isNull("blockType") ? "stone" : enemyData.getString("blockType");
         float x = enemyData.getFloat("x");
         float y = enemyData.getFloat("y");
         int spd = enemyData.getInt("speed");
