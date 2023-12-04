@@ -51,14 +51,24 @@
           "x": 240,
           "y": 440,
           "type": "mirage",
-          "blockType": "barrier",
+          "blockType": "brick",
+          "speed": 2.5,
+          "direction": [1, 0],
+          "isStunned": false,
+          "stunnedCounter": 0,
+          "score": 30
+        },
+        {
+          "x": 240,
+          "y": 440,
+          "type": "mirage",
+          "blockType": "brick",
           "speed": 2.5,
           "direction": [1, 0],
           "isStunned": false,
           "stunnedCounter": 0,
           "score": 30
         }
-        
       ]
     },
     "level2": {
