@@ -153,7 +153,7 @@ class Mirage extends Enemy {
     private int lastHideTimestamp = 0;
     private int MAX_HIDE_DURATION = 20;
     private int hidetime = int(random(2,5));
-    private String blockType;
+    private PImage blockType;
 
     //default properties
     private int enemex, enemey;
@@ -183,7 +183,7 @@ class Mirage extends Enemy {
           image(mirageAnimation, this.x, this.y, mirageAnimation.width, mirageAnimation.height);
           return;
         }
-        image(this.blockType == "stone" ? stoneblock : brickblock, this.x, this.y, gridSize, gridSize * 1.7);
+        image(this.blockType, this.x, this.y, gridSize, gridSize * 1.7);
     }
 
     private boolean checkHideStatus() {
