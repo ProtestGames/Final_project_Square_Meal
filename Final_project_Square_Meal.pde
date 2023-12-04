@@ -3,7 +3,7 @@ import VLCJVideo.*;
 import processing.video.*;
 import ddf.minim.*;
 
-boolean DEV_MODE = true;
+boolean DEV_MODE = false;
 
 // Sound parts
 Minim minim;
@@ -86,6 +86,11 @@ void loadlevel(int level) {
         println("Invalid level " + level);
         return;
     }
+    if (DEV_MODE) {
+        println("\n\n\n========================================");
+        println("DEVELOPER MODE");
+        println("========================================\n\n\n");
+    }
     JSONObject json = DEV_MODE ? loadJSONObject("dev.json") : loadJSONObject("map.json"); // Load the JSON file
     JSONObject levelData = json.getJSONObject("level" + str(level)); // Get data for level1
     if (levelData == null) {
@@ -115,7 +120,6 @@ void loadlevel(int level) {
     for (int i = 0; i < enemiesData.size(); i++) {
         JSONObject enemyData = enemiesData.getJSONObject(i);
         String enemyType = enemyData.isNull("type") ? "default" : enemyData.getString("type");
-        String blockType = enemyData.isNull("blockType") ? "stone" : enemyData.getString("blockType");
         float x = enemyData.getFloat("x");
         float y = enemyData.getFloat("y");
         int spd = enemyData.getInt("speed");
@@ -126,6 +130,7 @@ void loadlevel(int level) {
                 break;
             
             case "mirage":
+                String blockType = enemyData.isNull("blockType") ? "stone" : enemyData.getString("blockType");
                 enemies.add(new Mirage(x, y, spd, sco, blockType));
                 break;
         }
