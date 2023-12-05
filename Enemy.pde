@@ -152,11 +152,11 @@ class Enemy {
 
 
 class Mirage extends Enemy {
-    private float HIDE_CHANCE = 4.34;
+    private float HIDE_CHANCE = random(0,1);
     private int MAX_HIDE_DURATION = 20;
 
     private boolean isHidden = false;
-    private int hideCooldown = int(random(100,400));
+    private int hideCooldown = int(random(5,20));
     private int hideTimestamp = 0;
     private int lastHideTimestamp = 0;
     private int hidetime = int(random(2,5));
@@ -211,8 +211,7 @@ class Mirage extends Enemy {
         if (checkHideStatus() || this.isStunned){
             return;
         }
-        if(!this.isHidden&&millis()-this.hideTimestamp>3)
-          hide();
+        if(!(this.isHidden)&&millis()-this.hideTimestamp > 3) hide();
         this.winPos.X += this.direction[0] * enemySpeed;
         this.winPos.Y += this.direction[1] * enemySpeed;
         // enemex = int(this.winPos.X / gridSize);
@@ -228,15 +227,22 @@ class Mirage extends Enemy {
     }
     
     private void hide() {
+	println("try to hide");
         if (this.isHidden) {
             return;
         }
-        if (random(1,6) > this.HIDE_CHANCE) {
+	println("not hidden");
+        if (random(0,1) > this.HIDE_CHANCE) {
             return;
         }
-        if ((getTimestamp() - this.lastHideTimestamp) < this.hideCooldown + 10) {
-            return;
+	println("greater than HIDE_CHANCE");
+        if ((getTimestamp() - this.lastHideTimestamp) < this.hideCooldown) {
+            println(getTimestamp());
+	    println("lastTS: " + this.lastHideTimestamp);
+            println("Cooldown: " + this.hideCooldown);
+	    return;
         }
+	println("not cooling down");
         //replace self with stone block here
         this.isHidden = true;
         this.hideTimestamp = getTimestamp();
