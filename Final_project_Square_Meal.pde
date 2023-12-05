@@ -506,10 +506,10 @@ void keyPressed() {
                 } else {
                     for (int i = 0; i < enemies.size(); i++) {
                         Enemy monster = enemies.get(i);
-                        int mx = Math.round(monster.x / gridSize);
-                        int my = Math.round(monster.y / gridSize);
+                        // int mx = Math.round(monster.x / gridSize);
+                        // int my = Math.round(monster.y / gridSize);
                         
-                        if (mx == checkX && my == checkY && monster.exist &&  monster.checkstun()) {
+                        if (monster.currentPos.X == checkX && monster.currentPos.Y == checkY && monster.exist &&  monster.checkstun()) {
                             overallscore += monster.getscore();
                             swallowplayer.rewind();
                             swallowplayer.play();
