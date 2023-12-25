@@ -10,7 +10,7 @@ class Enemy {
     
     Enemy(float x, float y,int speed,int score) {
         this.enemySpeed = speed;
-        this.winPos = new WindowsPosition(Math.round(x), Math.round(y));
+        this.winPos = new WindowsPosition(int(x), int(y));
         this.direction = new int[]{1, 0};
         // enemex = int(x / gridSize);
         // lastx = enemex;
@@ -38,6 +38,8 @@ class Enemy {
             // enemex = int(this.x / gridSize);
             // enemey = int(this.y / gridSize);
             this.currentPos = winPos.toBoardPosition();
+            if(lastPos.X!=currentPos.X||lastPos.Y!=currentPos.Y)
+                println("current pos x,y=("+ currentPos.X +" "+ currentPos.Y+")");
             if (board[this.lastPos.X][this.lastPos.Y] == 3) {
                 board[this.lastPos.X][this.lastPos.Y] = 0;
             }
@@ -227,22 +229,22 @@ class Mirage extends Enemy {
     }
     
     private void hide() {
-	println("try to hide");
+	//println("try to hide");
         if (this.isHidden) {
             return;
         }
-	println("not hidden");
+	//println("not hidden");
         if (random(0,1) > this.HIDE_CHANCE) {
             return;
         }
-	println("greater than HIDE_CHANCE");
+	//println("greater than HIDE_CHANCE");
         if ((getTimestamp() - this.lastHideTimestamp) < this.hideCooldown) {
             println(getTimestamp());
 	    println("lastTS: " + this.lastHideTimestamp);
             println("Cooldown: " + this.hideCooldown);
 	    return;
         }
-	println("not cooling down");
+	//println("not cooling down");
         //replace self with stone block here
         this.isHidden = true;
         this.hideTimestamp = getTimestamp();

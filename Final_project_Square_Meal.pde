@@ -498,7 +498,7 @@ void keyPressed() {
         } else if (!hasBlock) {
             int checkX = playerCellX + movey[dir];
             int checkY = playerCellY + movex[dir];
-            
+            println("current PLY"+playerCellX+" "+playerCellY);
             if (checkX >= 0 && checkX < board.length && checkY >= 0 && checkY < board[0].length) {
                 if (board[checkX][checkY] == 1) {
                     hasBlock = true;
@@ -509,7 +509,7 @@ void keyPressed() {
                         // int mx = Math.round(monster.x / gridSize);
                         // int my = Math.round(monster.y / gridSize);
                         
-                        if (monster.currentPos.X == checkX && monster.currentPos.Y == checkY && monster.exist &&  monster.checkstun()) {
+                        if (  abs(monster.currentPos.X - checkX)<=1 && abs(monster.currentPos.Y - checkY)<=1 && float(abs(monster.currentPos.X - checkX)+abs(monster.currentPos.Y - checkY))<=1.5&&monster.exist &&  monster.checkstun()) {
                             overallscore += monster.getscore();
                             swallowplayer.rewind();
                             swallowplayer.play();
